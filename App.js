@@ -1,11 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, ActivityIndicator } from 'react-native';
+import Login from './screens/Login';
+import Chat from "./screens/chatScreen";
+import Navigator from './homeNavigation';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+    <React.Fragment>
+      {/* <Login /> */}
+      {/* <Chat /> */}
+      <Navigator />
+    </React.Fragment>
   );
 }
 

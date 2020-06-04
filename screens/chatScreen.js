@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TextInput, ScrollView, KeyboardAvoidingView, TouchableOpacity, ImageBackground, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Message from '../components/message';
-import Database from './database';
+// import Database from './database';
 
 
 export default class chatScreen extends React.Component {
