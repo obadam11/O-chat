@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, Image, KeyboardAvoidingView } from 'react-native';
 import firebase from 'firebase';
+import { addUser, deleteUser } from '../components/data';
 
 export default class Login extends React.Component {
 
@@ -11,7 +12,8 @@ export default class Login extends React.Component {
             password: '',
             savedEmail: '',
             isLoading: false,
-            user: ''
+            user: '',
+            name: '',
         }
     }
     UNSAFE_componentWillMount() {
@@ -34,10 +36,10 @@ export default class Login extends React.Component {
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
             this.setState({ user: user });
-            this.props.navigation.navigate(user ? "Chat" : "Login")
+            this.props.navigation.navigate(user ? "AllRooms" : "Login")
             if (user) {
                 console.log("You are logged in");
-                this.props.navigation.navigate("Chat")
+                this.props.navigation.navigate("AllRooms")
                 this.setState({ savedEmail: `Logged in as ${user.email}` });
             }
             else {
@@ -52,7 +54,7 @@ export default class Login extends React.Component {
             return (
                 <React.Fragment>
                     <ActivityIndicator size="large" color="red" />
-                    {console.log("Loading Now")}
+
                 </React.Fragment>
 
             )
@@ -114,8 +116,11 @@ export default class Login extends React.Component {
         this.setState({ isLoading: true });
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => {
+                this.props.navigation.navigate("AllRooms")
+                let user = firebase.auth().currentUser;
+                addUser(this.state.email, user.uid, this.state.name);
                 this.setState({ email: '', password: '', isLoading: false });
-                this.props.navigation.navigate("Chat")
+
             })
             .catch(error => { alert(error); this.setState({ isLoading: false }) });
     }
@@ -124,7 +129,7 @@ export default class Login extends React.Component {
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => {
                 this.setState({ email: '', password: '', isLoading: false });
-                this.props.navigation.navigate("Chat")
+                this.props.navigation.navigate("AllRooms")
             }
             )
             .catch(error => { alert(error); this.setState({ isLoading: false }) });
@@ -144,6 +149,7 @@ export default class Login extends React.Component {
         thisUser.delete()
             .then(() => {
                 alert("Account Deleted");
+                deleteUser(thisUser.email);
                 this.setState({ email: '', password: '', isLoading: false })
             })
             .catch(error => { alert(error); this.setState({ isLoading: false }) });
@@ -174,6 +180,14 @@ export default class Login extends React.Component {
                             value={this.state.password}
                             secureTextEntry
                             textContentType="password"
+                        />
+                        <TextInput
+                            style={styles.txtinp3}
+                            placeholder="user name"
+                            placeholderTextColor="gray"
+                            onChangeText={(val) => this.setState({ name: val })}
+                            value={this.state.name}
+                            autoCompleteType="name"
                         />
                         <View style={styles.Btns}>
                             {this.availableBtns()}
@@ -206,6 +220,14 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     txtinp2: {
+        height: 40,
+        borderBottomWidth: 1,
+        borderColor: 'white',
+        width: 250,
+        textAlign: 'center',
+        marginTop: 50
+    },
+    txtinp3: {
         height: 40,
         borderBottomWidth: 1,
         borderColor: 'white',

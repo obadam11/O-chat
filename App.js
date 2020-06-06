@@ -3,6 +3,7 @@ import { StyleSheet, ActivityIndicator } from 'react-native';
 import Login from './screens/Login';
 import Chat from "./screens/chatScreen";
 import Navigator from './homeNavigation';
+import AllRooms from './screens/allRooms';
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       {/* <Login /> */}
       {/* <Chat /> */}
       <Navigator />
+      {/* <AllRooms /> */}
     </React.Fragment>
   );
 }
