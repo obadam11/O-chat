@@ -5,7 +5,7 @@ import Message from '../components/message';
 import React from 'react';
 
 // To avoid a common warning
-import { YellowBox } from 'react-native';
+import { YellowBox, Alert } from 'react-native';
 import _ from 'lodash';
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -48,7 +48,7 @@ export function sendMessageForDataBase(roomName, msg) {
     firebase.firestore().collection("users").doc(userEmail).onSnapshot(doc => {
         firebase.firestore().collection(roomName).add({
             msg,
-            sendTime: Date.now(),
+            sendTime: firebase.firestore.FieldValue.serverTimestamp(),
             sender: doc.data().name
         })
     })
@@ -73,26 +73,16 @@ export function deleteUser(email) {
 }
 
 // Create a root collection and post the first document
-export function createRoom(roomName, user1Id, user2email) {
+export function createRoom(roomName, user1Email, user2email) {
 
-    firebase.firestore().collection(roomName).add({
+    firebase.firestore().collection(roomName).doc("fstmsg").set({
+        user1Email,
+        user2email,
         msg: "Welcome to this room",
-        sendTime: Date.now()
+        sendTime: firebase.firestore.FieldValue.serverTimestamp(),
+        sender: 'bot'
     })
-
-    // firebase.firestore().collection("users").doc(user2email).get()
-    //     .then(doc => {
-    //         firebase.firestore().collection(roomName).add({
-    //             // user1: user1Id,
-    //             // user2: doc.data().uid,
-    //             msg: 'Welcome to this room',
-    //             sendTime: Date.now()
-    //         })
-    //     })
-    //     .catch(err => alert(err));
 }
-
-
 // When creating a room add it to the rooms list of each user 
 export function addRoomToUsers(secUserEmail, roomName) {
     // Add the Room for the first User
@@ -107,3 +97,34 @@ export function addRoomToUsers(secUserEmail, roomName) {
         rooms: firebase.firestore.FieldValue.arrayUnion(roomName)
     })
 }
+
+// Only deleting the rooms from the users
+export function deleteRoomUsers(roomName) {
+    firebase.firestore().collection(roomName).doc("fstmsg").get()
+        .then(doc => {
+            // For the first user
+            firebase.firestore().collection("users").doc(doc.data().user1Email).update({
+                rooms: firebase.firestore.FieldValue.arrayRemove(roomName)
+            })
+
+            //For the second user
+            firebase.firestore().collection("users").doc(doc.data().user2email).update({
+                rooms: firebase.firestore.FieldValue.arrayRemove(roomName)
+            })
+        })
+}
+
+// Only deleting the room collection
+// Review
+export function deleteRoomColl(roomName) {
+    firebase.firestore().collection(roomName).get().then(docs => {
+        docs.forEach(doc => {
+            firebase.firestore().collection(roomName).doc(doc.id).delete()
+                .then(() => console.log("deleted"))
+                .catch(err => alert(err))
+        })
+    })
+}
+
+
+

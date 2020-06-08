@@ -16,8 +16,8 @@ export default class rommScreen extends React.Component {
     }
 
     createRoomHandler = () => {
-        let currentUserUid = firebase.auth().currentUser.uid;
-        createRoom(this.state.roomName, currentUserUid, this.state.userEmail);
+        let currentUserEmail = firebase.auth().currentUser.email;
+        createRoom(this.state.roomName, currentUserEmail, this.state.userEmail);
         addRoomToUsers(this.state.userEmail, this.state.roomName);
         this.props.navigation.navigate("AllRooms")
     }

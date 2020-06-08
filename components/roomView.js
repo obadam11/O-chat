@@ -24,15 +24,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     box: {
-        width: "90%",
+        width: "100%",
         paddingVertical: 20,
-        backgroundColor: 'skyblue',
+        // backgroundColor: 'skyblue',
+        backgroundColor: "#f0f0f0",
         alignItems: "center",
-        // marginBottom: 15,
         borderWidth: 1,
         borderColor: 'white',
         justifyContent: 'center',
-        borderRadius: 30
+        // borderRadius: 30
     },
     roomName: {
         fontSize: 20,

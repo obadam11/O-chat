@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, Image, KeyboardAvoidingView, StatusBar } from 'react-native';
 import firebase from 'firebase';
 import { addUser, deleteUser } from '../components/data';
+import { AntDesign } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class Login extends React.Component {
 
@@ -38,12 +40,10 @@ export default class Login extends React.Component {
             this.setState({ user: user });
             this.props.navigation.navigate(user ? "AllRooms" : "Login")
             if (user) {
-                console.log("You are logged in");
                 this.props.navigation.navigate("AllRooms")
                 this.setState({ savedEmail: `Logged in as ${user.email}` });
             }
             else {
-                console.log("user logged out");
                 this.props.navigation.navigate("Login");
                 this.setState({ savedEmail: "Not logged in yet" })
             }
@@ -54,17 +54,45 @@ export default class Login extends React.Component {
             return (
                 <React.Fragment>
                     <ActivityIndicator size="large" color="red" />
-
                 </React.Fragment>
 
             )
         }
         else {
-            return null;
+            return (
+                <React.Fragment>
+
+                </React.Fragment>
+            )
+        }
+    }
+    navigateToRoomsScreen = () => {
+        if (this.state.user)
+            this.props.navigation.navigate("AllRooms");
+        else
+            alert("You should Log in first!")
+    }
+    userNameInput = () => {
+        if (!this.state.user) {
+            return (
+                <TextInput
+                    style={styles.txtinp3}
+                    placeholder="user name"
+                    placeholderTextColor="gray"
+                    onChangeText={(val) => this.setState({ name: val })}
+                    value={this.state.name}
+                    autoCompleteType="name"
+                />
+            )
+        }
+        else {
+            return (
+                <React.Fragment>
+                </React.Fragment>
+            )
         }
     }
     availableBtns = () => {
-        // let user = firebase.auth().currentUser;
         if (this.state.user) {
             return (
                 <React.Fragment>
@@ -158,9 +186,12 @@ export default class Login extends React.Component {
         return (
             <React.Fragment>
                 <View style={styles.container}>
-                    <KeyboardAvoidingView behavior="padding">
+                    <View style={styles.top}>
                         <Text style={styles.logtxtchild}>{this.state.savedEmail}</Text>
-                    </KeyboardAvoidingView>
+                        <TouchableOpacity onPress={this.navigateToRoomsScreen}>
+                            <AntDesign name="arrowright" size={24} color="black" style={{ marginTop: 10, marginRight: 5 }} />
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.inp}>
                         <TextInput
                             style={styles.txtinp}
@@ -181,14 +212,8 @@ export default class Login extends React.Component {
                             secureTextEntry
                             textContentType="password"
                         />
-                        <TextInput
-                            style={styles.txtinp3}
-                            placeholder="user name"
-                            placeholderTextColor="gray"
-                            onChangeText={(val) => this.setState({ name: val })}
-                            value={this.state.name}
-                            autoCompleteType="name"
-                        />
+                        {this.userNameInput()}
+
                         <View style={styles.Btns}>
                             {this.availableBtns()}
                         </View>
@@ -205,7 +230,12 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#3b5998"
+        backgroundColor: "#f0f0f0"
+    },
+    top: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 30
     },
     inp: {
         flex: 1,
@@ -215,14 +245,14 @@ const styles = StyleSheet.create({
     txtinp: {
         height: 40,
         borderBottomWidth: 1,
-        borderColor: 'white',
+        borderColor: 'black',
         width: 250,
         textAlign: 'center'
     },
     txtinp2: {
         height: 40,
         borderBottomWidth: 1,
-        borderColor: 'white',
+        borderColor: 'black',
         width: 250,
         textAlign: 'center',
         marginTop: 50
@@ -230,7 +260,7 @@ const styles = StyleSheet.create({
     txtinp3: {
         height: 40,
         borderBottomWidth: 1,
-        borderColor: 'white',
+        borderColor: 'black',
         width: 250,
         textAlign: 'center',
         marginTop: 50
@@ -250,7 +280,7 @@ const styles = StyleSheet.create({
     },
     logtxtchild: {
         fontSize: 20,
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
         marginTop: 10,
         fontStyle: "italic",

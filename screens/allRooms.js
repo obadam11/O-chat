@@ -1,7 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import RoomView from '../components/roomView';
+import { deleteRoomUsers, deleteRoomColl } from '../components/data'
 import firebase from 'firebase';
 import 'firebase/firestore'
 
@@ -31,6 +32,17 @@ export default class AllRooms extends React.Component {
         }
     }
 
+    deleteRoom = (roomName) => {
+        const sure = () => {
+            deleteRoomColl(roomName);
+            deleteRoomUsers(roomName);
+        }
+
+        Alert.alert("Delete?", "Are you sure you want to delete this room?", [
+            { text: "Cancel" },
+            { text: 'Yes', onPress: sure }
+        ])
+    }
 
 
 
@@ -52,21 +64,34 @@ export default class AllRooms extends React.Component {
     }
 
     componentDidMount() {
-        // const userRooms = () => {
-        //     const userEmail = firebase.auth().currentUser.email;
-        //     firebase.firestore().collection("users").doc(userEmail).get()
-        //         .then(doc => {
-        //             this.setState({ rooms: [...doc.data().rooms] })
-        //         })
-        //         .catch(err => alert(err));
-        // }
-
         const userRooms = () => {
             const userEmail = firebase.auth().currentUser.email;
             firebase.firestore().collection("users").doc(userEmail).onSnapshot(doc => {
                 this.setState({ rooms: [...doc.data().rooms] })
             })
         }
+
+        // const userRooms = () => {
+        //     const userEmail = firebase.auth().currentUser.email;
+        //     firebase.firestore().collection("users").doc(userEmail).onSnapshot(docRoom => {
+        //         docRoom.data().rooms.forEach(room => {
+        //             firebase.firestore().collection(room).doc("fstmsg").onSnapshot(docName => {
+        //                 let needed;
+        //                 if (docName.data().user1Email !== userEmail) {
+        //                     needed = docName.data().user1Email
+        //                 }
+        //                 else {
+        //                     needed = docName.data().user2email;
+        //                 }
+        //                 if (needed == undefined) console.log("needed is undefined")
+        //                 else {
+        //                     this.setState({ rooms: [{ roomName: room, name: needed }] })
+        //                 }
+        //             })
+        //         })
+        //     })
+
+        // }
         userRooms();
 
     }
@@ -85,11 +110,15 @@ export default class AllRooms extends React.Component {
                 <ScrollView style={styles.rooms}>
                     {this.state.rooms.map(room => {
                         return (
-                            <TouchableOpacity onPress={() => this.NavigateToChatScreen(room)} key={room}>
+                            <TouchableOpacity
+                                onPress={() => this.NavigateToChatScreen(room)}
+                                key={room}
+                                onLongPress={() => this.deleteRoom(room)}
+                                delayLongPress={600}
+                            >
                                 <RoomView name={room} key={room} />
                             </TouchableOpacity>
                         )
-
                     })}
 
                 </ScrollView>
@@ -100,17 +129,18 @@ export default class AllRooms extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
+        marginTop: 10,
         position: 'absolute',
         right: 10,
-        top: 10
+        top: 15,
     },
     rooms: {
         width: '100%',
         height: "80%",
         lineHeight: 300,
         flexDirection: 'column',
-        marginTop: 35,
-        marginBottom: 10
+        marginTop: 50,
+        marginBottom: 10,
     },
     noRoomsTxt: {
         color: 'grey',
@@ -120,5 +150,8 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    bar: {
+
     }
 });
