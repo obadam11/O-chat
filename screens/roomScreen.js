@@ -35,6 +35,7 @@ export default class rommScreen extends React.Component {
                             placeholder="Enter User's Email"
                             onChangeText={(val) => this.setState({ userEmail: val })}
                             value={this.state.userEmail}
+                            autoCapitalize="none"
                         />
                         <TextInput
                             style={styles.userEmail}

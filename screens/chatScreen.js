@@ -39,7 +39,6 @@ export default class chatScreen extends React.Component {
         if (this.state.message.trim().length > 0) {
             this.setState({
                 allMsg: this.state.allMsg.concat(this.state.message),
-                //message: ''
             })
         }
         sendMessageForDataBase(this.getRoomName(), this.state.message,);
@@ -79,16 +78,14 @@ export default class chatScreen extends React.Component {
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-
-        this.getDataBase();
-        this.setState({ room: this.props.navigation.getParam("roomName") });
     }
 
     getRoomName = () => this.props.navigation.getParam('roomName');
 
 
     componentDidMount() {
-        console.log(this.state.room)
+        this.getDataBase();
+        this.setState({ room: this.props.navigation.getParam("roomName") });
     }
 
 
@@ -96,7 +93,6 @@ export default class chatScreen extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <StatusBar hidden />
                 <View style={styles.badge}>
                     <View style={styles.badgeChild}>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
@@ -116,13 +112,17 @@ export default class chatScreen extends React.Component {
                                 this.scrollView.scrollToEnd({ animated: true });
                             }}
                         >
-                            {this.state.msgs.map(item => (<View key={Math.random()}><Message text={item.msg} sender={item.sender} key={Math.random()} /></View>))}
+                            {this.state.msgs.map(item => (<View key={Math.random()}>
+                                <Message text={item.msg} sender={item.sender} key={Math.random()} />
+                            </View>))}
                         </ScrollView>
                         <View style={styles.inpConatiner}>
                             <TextInput
                                 style={styles.inp}
                                 onChangeText={(val) => this.setState({ message: val })}
                                 value={this.state.message}
+                                placeholder="Type a Message"
+                                multiline
                             />
                             <TouchableOpacity style={styles.btn} onPress={this.sendMessageHandler}>
                                 <MaterialIcons name="send" size={24} color="white" />
@@ -135,6 +135,9 @@ export default class chatScreen extends React.Component {
     }
 }
 
+
+// doc.data().name == item.sender ? styles.cloud ? styles.cloud2
+
 const styles = StyleSheet.create({
     container: {
     },
@@ -144,15 +147,16 @@ const styles = StyleSheet.create({
         flexDirection: 'column-reverse',
         backgroundColor: "#f0f0f0"
     },
-
     inp: {
         width: "75%",
-        height: 40,
+        // height: 40,
         borderWidth: 1,
-        borderColor: '#90EE90',
+        // borderColor: '#90EE90',
         borderRadius: 50,
-        padding: 10,
-        backgroundColor: 'white'
+        paddingHorizontal: 10,
+        backgroundColor: 'white',
+        paddingVertical: 10,
+        maxHeight: 150
     },
     btn: {
         width: 40,

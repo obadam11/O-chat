@@ -120,7 +120,7 @@ export function deleteRoomColl(roomName) {
     firebase.firestore().collection(roomName).get().then(docs => {
         docs.forEach(doc => {
             firebase.firestore().collection(roomName).doc(doc.id).delete()
-                .then(() => console.log("deleted"))
+                .then(() => { })
                 .catch(err => alert(err))
         })
     })

@@ -11,6 +11,7 @@ export default class AllRooms extends React.Component {
         super(props)
         this.state = {
             rooms: [],
+            // roomsWithFriends: []
         }
     }
 
@@ -72,29 +73,56 @@ export default class AllRooms extends React.Component {
         }
 
         // const userRooms = () => {
-        //     const userEmail = firebase.auth().currentUser.email;
-        //     firebase.firestore().collection("users").doc(userEmail).onSnapshot(docRoom => {
-        //         docRoom.data().rooms.forEach(room => {
-        //             firebase.firestore().collection(room).doc("fstmsg").onSnapshot(docName => {
-        //                 let needed;
-        //                 if (docName.data().user1Email !== userEmail) {
-        //                     needed = docName.data().user1Email
-        //                 }
-        //                 else {
-        //                     needed = docName.data().user2email;
-        //                 }
-        //                 if (needed == undefined) console.log("needed is undefined")
-        //                 else {
-        //                     this.setState({ rooms: [{ roomName: room, name: needed }] })
-        //                 }
+        //     firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
+        //         this.setState({ rooms: [...doc.data().rooms] })
+
+        //         this.state.rooms.forEach(room => {
+        //             console.log(room);
+        //             const userEmail = firebase.auth().currentUser.email;
+        //             firebase.firestore().collection(room).doc("fstmsg").get().then(doc2Users => {
+        //                 const user1 = doc2Users.data().user1Email;
+        //                 const user2 = doc2Users.data().user2email;
+        //                 let friendEmail = (user1 != userEmail) ? user1 : user2;
+        //                 firebase.firestore().collection("users").doc(friendEmail).get().then(doc => {
+        //                     console.log(doc.data().name);
+        //                     this.setState({ roomsWithFriends: this.state.roomsWithFriends.concat({ name: room, friend: doc.data().name }) })
+        //                     console.log(this.state.roomsWithFriends);
+        //                 })
         //             })
+
         //         })
         //     })
-
         // }
-        userRooms();
 
+
+        userRooms();
     }
+
+    // displayRoom = () => {
+    //     if (this.state.roomsWithFriends.length) {
+    //         console.log(this.state.roomsWithFriends);
+    //         return (
+    //             this.state.roomsWithFriends.map(part => {
+    //                 return (
+    //                     <TouchableOpacity
+    //                         onPress={() => this.NavigateToChatScreen(part.name)}
+    //                         key={part.name}
+    //                         onLongPress={() => this.deleteRoom(part.name)}
+    //                         delayLongPress={600}
+    //                     >
+    //                         <RoomView name={part.name} key={part.name} friend={part.friend} />
+    //                     </TouchableOpacity>
+    //                 )
+    //             })
+    //         )
+
+    //     }
+    //     else {
+    //         return (
+    //             <React.Fragment></React.Fragment>
+    //         )
+    //     }
+    // }
 
 
 
@@ -120,6 +148,8 @@ export default class AllRooms extends React.Component {
                             </TouchableOpacity>
                         )
                     })}
+
+                    {/* {this.displayRoom()} */}
 
                 </ScrollView>
             </React.Fragment>

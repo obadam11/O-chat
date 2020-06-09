@@ -72,17 +72,38 @@ export default class Login extends React.Component {
         else
             alert("You should Log in first!")
     }
-    userNameInput = () => {
+    TextInputs = () => {
         if (!this.state.user) {
             return (
-                <TextInput
-                    style={styles.txtinp3}
-                    placeholder="user name"
-                    placeholderTextColor="gray"
-                    onChangeText={(val) => this.setState({ name: val })}
-                    value={this.state.name}
-                    autoCompleteType="name"
-                />
+                <React.Fragment>
+                    <TextInput
+                        style={styles.txtinp}
+                        placeholder="Email"
+                        placeholderTextColor="gray"
+                        onChangeText={(val) => this.setState({ email: val })}
+                        value={this.state.email}
+                        textContentType="emailAddress"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                    />
+                    <TextInput
+                        style={styles.txtinp2}
+                        placeholder="password"
+                        placeholderTextColor="gray"
+                        onChangeText={(val) => this.setState({ password: val })}
+                        value={this.state.password}
+                        secureTextEntry
+                        textContentType="password"
+                    />
+                    <TextInput
+                        style={styles.txtinp3}
+                        placeholder="user name"
+                        placeholderTextColor="gray"
+                        onChangeText={(val) => this.setState({ name: val })}
+                        value={this.state.name}
+                        autoCompleteType="name"
+                    />
+                </React.Fragment>
             )
         }
         else {
@@ -96,13 +117,6 @@ export default class Login extends React.Component {
         if (this.state.user) {
             return (
                 <React.Fragment>
-                    <View style={styles.login}>
-                        <Button
-                            color="#020202"
-                            title="Log In"
-                            onPress={this.logInHandler}
-                        />
-                    </View>
                     <View style={styles.logOutBtn}>
                         <Button
                             color="#020202"
@@ -121,19 +135,27 @@ export default class Login extends React.Component {
 
             return (
                 <React.Fragment>
-                    <View style={styles.login}>
+                    {/* <View style={styles.login}>
                         <Button
                             color="#020202"
                             title="Log In"
                             onPress={this.logInHandler}
                         />
-                    </View>
+                    </View> */}
+
                     <View style={styles.signUpBtn}>
                         <Button
                             color="#020202"
                             title="Sign Up"
                             onPress={this.signUpHandler}
                         />
+                    </View>
+
+                    <View style={styles.loginContainer}>
+                        <Text style={styles.loginTxt}>
+                            Already have an account?
+                        </Text>
+                        <TouchableOpacity onPress={this.logInHandler}><Text style={styles.loginWord}>  Log in</Text></TouchableOpacity>
                     </View>
                 </React.Fragment>
             )
@@ -193,26 +215,7 @@ export default class Login extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.inp}>
-                        <TextInput
-                            style={styles.txtinp}
-                            placeholder="Email"
-                            placeholderTextColor="gray"
-                            onChangeText={(val) => this.setState({ email: val })}
-                            value={this.state.email}
-                            textContentType="emailAddress"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-                        <TextInput
-                            style={styles.txtinp2}
-                            placeholder="password"
-                            placeholderTextColor="gray"
-                            onChangeText={(val) => this.setState({ password: val })}
-                            value={this.state.password}
-                            secureTextEntry
-                            textContentType="password"
-                        />
-                        {this.userNameInput()}
+                        {this.TextInputs()}
 
                         <View style={styles.Btns}>
                             {this.availableBtns()}
@@ -269,9 +272,9 @@ const styles = StyleSheet.create({
         width: 250,
         marginTop: 30,
     },
-    login: {
-        marginBottom: 20
-    },
+    // login: {
+    //     marginBottom: 20
+    // },
     signUpBtn: {
         marginBottom: 20
     },
@@ -285,5 +288,14 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontStyle: "italic",
         fontFamily: "sans-serif-light"
+    },
+    loginContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 15
+    },
+    loginWord: {
+        fontWeight: 'bold',
+        color: "#383838"
     }
 })
