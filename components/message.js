@@ -14,38 +14,51 @@ export default class Message extends React.Component {
 
     changeState = () => {
         firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
-            if (this.props.sender == doc.data().name) {
-                this.setState({ me: true })
+            if (doc.data().name == this.props.sender) {
+                this.setState({ me: 'true' })
+            }
+            else if (this.props.sender == 'bot') {
+                this.setState({ me: 'none' })
+
             }
             else {
-                this.setState({ me: false });
+                this.setState({ me: 'false' })
             }
         })
     }
     condition = () => {
-        if (this.state.me) {
+        if (this.state.me == 'true') {
             return (
                 <View style={styles.container}>
                     <View style={styles.cloud}>
                         <View style={styles.allText}>
+                            <Text style={styles.senderName}>{this.props.sender}</Text>
                             <Text style={styles.test}>{this.props.text}</Text>
-                            <View style={styles.senderParent}>
-                                <Text style={styles.senderName}>{this.props.sender}</Text>
-                            </View>
                         </View>
                     </View>
                 </View>
             )
+        }
+        else if (this.state.me == 'none') {
+            return (
+                <View style={styles.container3}>
+                    <View style={styles.cloud3}>
+                        <View style={styles.allText}>
+                            <Text style={styles.senderName}>{this.props.sender}</Text>
+                            <Text style={styles.test}>{this.props.text}</Text>
+                        </View>
+                    </View>
+                </View>
+            )
+
         }
         else {
             return (
                 <View style={styles.container2}>
                     <View style={styles.cloud2}>
                         <View style={styles.allText}>
-                            <Text style={styles.test}>{this.props.text}</Text>
-                            <View style={styles.senderParent}>
-                                <Text style={styles.senderName}>{this.props.sender}</Text>
-                            </View>
+                            <Text style={styles.senderName2}>{this.props.sender}</Text>
+                            <Text style={styles.test2}>{this.props.text}</Text>
                         </View>
                     </View>
                 </View>
@@ -57,21 +70,14 @@ export default class Message extends React.Component {
         this.changeState();
     }
 
+    // shouldComponentUpdate() {
+    //     // return false;
+    // }
+
 
     render() {
         return (
             this.condition()
-            // <View style={styles.conatiner}>
-            //     {/* Just make its styles to "styles.cloud" */}
-            //     <View style={styles.cloud}>
-            //         <View style={styles.allText}>
-            //             <Text style={styles.test}>{this.props.text}</Text>
-            //             <View style={styles.senderParent}>
-            //                 <Text style={styles.senderName}>{this.props.sender}</Text>
-            //             </View>
-            //         </View>
-            //     </View>
-            // </View>
         )
     }
 }
@@ -81,30 +87,35 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginBottom: 10,
         marginTop: 10,
-        // justifyContent: 'center',
-        // alignItems: 'center'
-        alignSelf: 'flex-start',
-        marginLeft: 10
+        alignSelf: 'flex-end',
+        marginRight: 10
     },
     container2: {
         flexDirection: 'column',
         marginBottom: 10,
         marginTop: 10,
-        // justifyContent: 'center',
-        // alignItems: 'center'
-        alignSelf: 'flex-end',
-        marginRight: 10
+        alignSelf: 'flex-start',
+        marginLeft: 10
+    },
+    container3: {
+        flexDirection: 'column',
+        marginBottom: 10,
+        marginTop: 10,
+        alignSelf: 'center',
     },
     test: {
         color: 'white',
         fontSize: 20,
     },
+    test2: {
+        color: 'black',
+        fontSize: 20,
+    },
     cloud: {
         flexDirection: "row",
-        width: "70%",
-        height: 80,
+        maxWidth: 325,
         padding: 5,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: 'black',
         backgroundColor: '#383838',
@@ -113,22 +124,34 @@ const styles = StyleSheet.create({
     },
     cloud2: {
         flexDirection: "row",
-        width: "70%",
-        height: 80,
+        maxWidth: 325,
         padding: 5,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: 'black',
-        backgroundColor: 'purple',
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
         alignItems: 'center',
         justifyContent: 'center'
     },
-    senderParent: {
+    cloud3: {
+        flexDirection: "row",
+        padding: 5,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'black',
+        backgroundColor: 'rgba(	135, 206, 235, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     allText: {
         flexDirection: 'column',
     },
     senderName: {
+        fontSize: 12,
+        color: 'white',
+        textAlign: 'center'
+    },
+    senderName2: {
         fontSize: 12,
         color: 'black',
         textAlign: 'center'

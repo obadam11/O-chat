@@ -1,16 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, KeyboardAvoidingView, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TextInput, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import Message from '../components/message';
 import { sendMessageForDataBase } from '../components/data';
 import firebase from 'firebase';
 import { decode, encode } from 'base-64';
 import { AntDesign } from '@expo/vector-icons';
+import "../components/InputChat";
 
 // To avoid a common warning
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
 import { FlatList } from 'react-native-gesture-handler';
+import InputChat from '../components/InputChat';
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.log = message => {
@@ -30,20 +31,11 @@ export default class chatScreen extends React.Component {
             allMsg: [],
             msgs: [],
             senderName: '',
-            room: ''
+            room: '',
         }
 
     }
 
-    sendMessageHandler = () => {
-        if (this.state.message.trim().length > 0) {
-            this.setState({
-                allMsg: this.state.allMsg.concat(this.state.message),
-            })
-        }
-        sendMessageForDataBase(this.getRoomName(), this.state.message,);
-        this.setState({ message: '' })
-    }
 
     getDataBase = () => {
         const roomName = this.getRoomName();
@@ -88,22 +80,18 @@ export default class chatScreen extends React.Component {
         this.setState({ room: this.props.navigation.getParam("roomName") });
     }
 
+    // shouldComponentUpdate() {
 
+    // }
 
     render() {
         return (
             <React.Fragment>
-                <View style={styles.badge}>
-                    <View style={styles.badgeChild}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
-                            <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
-                        </TouchableOpacity>
-                        <Text style={styles.badgetxt}>{this.state.room} </Text>
-                    </View>
-                </View>
+                <StatusBar hidden />
                 <View source={require("../assets/bg.jpg")} style={styles.bgImg}>
                     <KeyboardAvoidingView
-                        behavior="height"
+                        behavior={Platform.Os == "ios" ? "padding" : "height"}
+
                     >
                         <ScrollView
                             style={styles.msgs}
@@ -111,22 +99,24 @@ export default class chatScreen extends React.Component {
                             onContentSizeChange={(contentWidth, contentHeight) => {
                                 this.scrollView.scrollToEnd({ animated: true });
                             }}
+                            stickyHeaderIndices={[0]}
                         >
-                            {this.state.msgs.map(item => (<View key={Math.random()}>
-                                <Message text={item.msg} sender={item.sender} key={Math.random()} />
-                            </View>))}
+                            <View style={styles.badge}>
+                                <View style={styles.badgeChild}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
+                                        <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
+                                    </TouchableOpacity>
+                                    <Text style={styles.badgetxt}>{this.state.room}</Text>
+                                </View>
+                            </View>
+                            <View>
+                                {this.state.msgs.map(item => (
+                                    <Message text={item.msg} sender={item.sender} key={Math.random()} />
+                                ))}
+                            </View>
                         </ScrollView>
                         <View style={styles.inpConatiner}>
-                            <TextInput
-                                style={styles.inp}
-                                onChangeText={(val) => this.setState({ message: val })}
-                                value={this.state.message}
-                                placeholder="Type a Message"
-                                multiline
-                            />
-                            <TouchableOpacity style={styles.btn} onPress={this.sendMessageHandler}>
-                                <MaterialIcons name="send" size={24} color="white" />
-                            </TouchableOpacity>
+                            <InputChat roomName={this.getRoomName()} />
                         </View>
                     </KeyboardAvoidingView>
                 </View  >
@@ -136,8 +126,6 @@ export default class chatScreen extends React.Component {
 }
 
 
-// doc.data().name == item.sender ? styles.cloud ? styles.cloud2
-
 const styles = StyleSheet.create({
     container: {
     },
@@ -146,26 +134,6 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         flexDirection: 'column-reverse',
         backgroundColor: "#f0f0f0"
-    },
-    inp: {
-        width: "75%",
-        // height: 40,
-        borderWidth: 1,
-        // borderColor: '#90EE90',
-        borderRadius: 50,
-        paddingHorizontal: 10,
-        backgroundColor: 'white',
-        paddingVertical: 10,
-        maxHeight: 150
-    },
-    btn: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginLeft: 5,
-        backgroundColor: "lime",
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     inpConatiner: {
         flexDirection: 'row',
@@ -180,7 +148,7 @@ const styles = StyleSheet.create({
     },
     badge: {
         width: '100%',
-        height: "12%",
+        paddingVertical: 20,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
@@ -189,12 +157,13 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '80%',
         alignItems: 'center',
-        justifyContent: 'space-evenly',
+        // justifyContent: 'space-evenly',
+        // justifyContent: "flex-start",
         flexDirection: 'row',
     },
     badgetxt: {
         fontSize: 20,
-        marginRight: '50%',
+        marginRight: '50%', // IF YOU REMOVE THIS ARROW AND TEXT GO TO CENETR
         fontWeight: "bold"
     },
     arr: {

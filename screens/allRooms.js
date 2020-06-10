@@ -45,8 +45,6 @@ export default class AllRooms extends React.Component {
         ])
     }
 
-
-
     UNSAFE_componentWillMount() {
         const firebaseConfig = {
             apiKey: "AIzaSyDlTYCFtvZ-bohe7kjzbOLSryMshurBeEg",
