@@ -46,6 +46,7 @@ export function sendMessageForDataBase(roomName, msg) {
     let userEmail = firebase.auth().currentUser.email;
     firebase.firestore().collection("users").doc(userEmail).onSnapshot(doc => {
         firebase.firestore().collection(roomName).add({
+            type: 'txt',
             msg,
             sendTime: firebase.firestore.FieldValue.serverTimestamp(),
             sender: doc.data().name
@@ -75,6 +76,7 @@ export function deleteUser(email) {
 export function createRoom(roomName, user1Email, user2email) {
 
     firebase.firestore().collection(roomName).doc("fstmsg").set({
+        type: "txt",
         user1Email,
         user2email,
         msg: "Welcome to this room",
@@ -128,19 +130,40 @@ export function deleteRoomColl(roomName) {
 
 // Dealing With Firebase Storage (Images)
 
-export const uploadImage = async (uri, roomName) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
+export const uploadImage = (uri, roomName) => {
+    firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
+        firebase.firestore().collection(roomName).doc().set({
+            type: 'img',
+            url: uri,
+            sender: doc.data().name,
+            sendTime: firebase.firestore.FieldValue.serverTimestamp()
+        })
+            .then(async () => {
+                const response = await fetch(uri);
+                const blob = await response.blob();
 
-    let refernce = firebase.storage().ref().child(`${roomName}/${Math.random()}`);
-    return refernce.put(blob);
+                let refernce = firebase.storage().ref().child(`${roomName}/${Math.random()}`);
+                console.log('finished uploading');
+                return refernce.put(blob);
+
+            })
+            .catch(err => Alert.alert(err));
+    })
+    // const response = await fetch(uri);
+    // const blob = await response.blob();
+
+    // let refernce = firebase.storage().ref().child(`${roomName}/${Math.random()}`);
+    // return refernce.put(blob);
 }
 
-export const downloadImages = (roomName, callBack) => {
+export const downloadAllImages = (roomName, callBack) => {
     firebase.storage().ref(roomName).listAll().then(snap => {
         snap.items.forEach(itemRef => {
             itemRef.getDownloadURL().then(imgUrl => {
-                callBack(imgUrl);
+                callBack(imgUrl)
+
+
+                    ;
             })
         })
     })
@@ -152,6 +175,14 @@ export const downloadImages = (roomName, callBack) => {
     // let img = firebase.storage().ref(`${roomName}/second`);
     // const url = await img.getDownloadURL();
     // console.log(url);
+}
+
+export const downloadOneImg = (roomName, imgName, callBack) => {
+    firebase.storage().ref(roomName + "/" + imgName).getDownloadURL()
+        .then(url => {
+            callBack(url)
+        })
+        .catch(err => Alert.alert(err))
 }
 
 export const deleteImage = (roomName, uri) => {

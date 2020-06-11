@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { downloadImages } from './data';
+import { downloadAllImages } from './data';
 import firebase from 'firebase';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -31,22 +31,59 @@ export default class ImgMessage extends Component {
         //         })
         //     })
         // })
-        downloadImages(this.props.roomName, (imgUrl) => {
+        downloadAllImages(this.props.roomName, (imgUrl) => {
             this.setState({ imgs: this.state.imgs.concat(imgUrl) });
-            console.log(this.state.imgs);
+        })
+    }
+
+    rendering = () => {
+        const thisUser = firebase.auth().currentUser.email;
+        firebase.firestore().collection("users").doc(thisUser).onSnapshot(doc => {
+            let thisUserName = doc.data().name;
+
+            if (this.props.sender == thisUserName) {
+                console.log(thisUserName);
+                return (<TouchableOpacity style={styles.imgCloud}>
+                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
+                    <Image
+                        source={{ uri: this.props.uri }}
+                        style={styles.tinyimg}
+                    />
+                </TouchableOpacity>)
+            }
+            else {
+                return (<TouchableOpacity style={styles.imgCloud}>
+                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
+                    <Image
+                        source={{ uri: this.props.uri }}
+                        style={styles.tinyimg}
+                    />
+                </TouchableOpacity>)
+            }
         })
     }
 
     render() {
         return (
             <View style={styles.container}>
-                {this.state.imgs.map(img => {
+
+                {/* {this.rendering()} */}
+                <TouchableOpacity style={styles.imgCloud}>
+                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
+                    <Image
+                        source={{ uri: this.props.uri }}
+                        style={styles.tinyimg}
+                    />
+                </TouchableOpacity>
+
+                {/* {this.state.imgs.map(img => {
 
                     return (
                         <TouchableOpacity style={styles.imgCloud} key={img}>
                             <Text style={styles.imgTxt}>{this.props.sender}</Text>
                             <Image
-                                source={{ uri: img }}
+                                // source={{ uri: img }}
+                                source={{ uri: this.props.uri }}
                                 style={styles.tinyimg}
                                 key={img}
                             />
@@ -54,7 +91,7 @@ export default class ImgMessage extends Component {
 
                     )
 
-                })}
+                })} */}
             </View>
         )
     }

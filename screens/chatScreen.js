@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar, Alert, ImageBackground } from 'react-native';
 import Message from '../components/message';
 import { sendMessageForDataBase } from '../components/data';
 import firebase from 'firebase';
@@ -7,6 +7,7 @@ import { decode, encode } from 'base-64';
 import { AntDesign } from '@expo/vector-icons';
 import "../components/InputChat";
 import ImgMessage from '../components/ImgMessage';
+import { downloadAllImages, downloadOneImg } from '../components/data';
 
 // To avoid a common warning
 import { YellowBox } from 'react-native';
@@ -44,7 +45,22 @@ export default class chatScreen extends React.Component {
         firebase.firestore().collection(roomName).orderBy("sendTime").onSnapshot(docs => {
             var messages = [];
             docs.forEach(function (doc) {
-                messages.push({ msg: doc.data().msg, sender: doc.data().sender });
+                if (doc.data().type == 'txt') {
+                    messages.push({ msg: doc.data().msg, sender: doc.data().sender, type: 'txt' });
+                }
+                else if (doc.data().type == 'img') {
+                    messages.push({ url: doc.data().url, sender: doc.data().sender, type: 'img' });
+
+                    downloadAllImages(roomName, imgUrl => {
+                        messages.forEach(msg => {
+                            if (msg.type == 'img') {
+                                // alert(url);
+                                msg.url = imgUrl;
+                            }
+                        })
+                    })
+
+                }
             });
             this.setState({ msgs: [...messages] });
         });
@@ -96,8 +112,8 @@ export default class chatScreen extends React.Component {
                         behavior={Platform.Os == "ios" ? "padding" : "height"}
 
                     >
-                        <ImgMessage roomName={this.getRoomName()} sender="obada" />
-                        {/* <ScrollView
+                        {/* <ImgMessage roomName={this.getRoomName()} sender="obada" /> */}
+                        <ScrollView
                             style={styles.msgs}
                             ref={ref => this.scrollView = ref}
                             onContentSizeChange={(contentWidth, contentHeight) => {
@@ -114,11 +130,12 @@ export default class chatScreen extends React.Component {
                                 </View>
                             </View>
                             <View>
-                                {this.state.msgs.map(item => (
-                                    <Message text={item.msg} sender={item.sender} key={Math.random()} />
-                                ))}
+                                {this.state.msgs.map(item => {
+                                    if (item.type == 'txt') { return <Message text={item.msg} sender={item.sender} key={Math.random()} /> }
+                                    else if (item.type == 'img') { return <ImgMessage sender={item.sender} uri={item.url} key={Math.random()} roomName={this.getRoomName()} /> }
+                                })}
                             </View>
-                        </ScrollView> */}
+                        </ScrollView>
                         <View style={styles.inpConatiner}>
                             <InputChat roomName={this.getRoomName()} />
                         </View>

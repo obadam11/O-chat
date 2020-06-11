@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Keyboard, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Keyboard, StyleSheet, TouchableOpacity, Alert, CameraRoll } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import { uploadImage } from './data';
 import { Entypo } from '@expo/vector-icons';
+import firebase from 'firebase';
 
 export default class AddImage extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ export default class AddImage extends React.Component {
     }
 
     componentDidMount() {
+        firebase.app();
         const permission = async () => {
             if (Constants.platform.android || Constants.platform.ios) {
                 const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -52,13 +54,38 @@ export default class AddImage extends React.Component {
             aspect: [4, 4],
             quality: 1,
         });
-
         if (!result.cancelled) {
-            console.log(this.props.roomName);
             this.setState({ image: result.uri });
-            uploadImage(result.uri, this.props.roomName)
-                .then(() => { Alert.alert("Uploaded successfully") })
-                .catch(err => Alert.alert(err));
+            // uploadImage(result.uri, this.props.roomName)
+            //     .then(() => {
+            //         // CameraRoll.saveImageWithTag(result.uri);
+            //         Alert.alert("Uploaded successfully")
+            //     })
+            //     .catch(err => Alert.alert(err));
+
+            firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
+                firebase.firestore().collection(this.props.roomName).doc().set({
+                    type: 'img',
+                    url: result.uri,
+                    sender: doc.data().name,
+                    sendTime: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                    .then(async () => {
+                        const response = await fetch(result.uri);
+                        const blob = await response.blob();
+
+                        let refernce = firebase.storage().ref().child(`${this.props.roomName}/${Math.random()}`);
+                        console.log('finished uploading');
+                        refernce.put(blob)
+                            .then(() => {
+                                // CameraRoll.saveImageWithTag(result.uri);
+                                Alert.alert("Uploaded successfully")
+                            })
+                            .catch(err => Alert.alert(err));
+
+                    })
+                    .catch(err => Alert.alert(err));
+            })
         }
     }
 
