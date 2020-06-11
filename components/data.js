@@ -1,8 +1,7 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
 import { decode, encode } from 'base-64';
-import Message from '../components/message';
-import React from 'react';
+
 
 // To avoid a common warning
 import { YellowBox, Alert } from 'react-native';
@@ -127,4 +126,36 @@ export function deleteRoomColl(roomName) {
 }
 
 
+// Dealing With Firebase Storage (Images)
 
+export const uploadImage = async (uri, roomName) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    let refernce = firebase.storage().ref().child(`${roomName}/${Math.random()}`);
+    return refernce.put(blob);
+}
+
+export const downloadImages = (roomName, callBack) => {
+    firebase.storage().ref(roomName).listAll().then(snap => {
+        snap.items.forEach(itemRef => {
+            itemRef.getDownloadURL().then(imgUrl => {
+                callBack(imgUrl);
+            })
+        })
+    })
+    // firebase.storage().ref(`${roomName}/${imageName}`).getDownloadURL()
+    //     .then(url => {
+    //         console.log(url)
+    //     }, function (err) { console.log(err) })
+
+    // let img = firebase.storage().ref(`${roomName}/second`);
+    // const url = await img.getDownloadURL();
+    // console.log(url);
+}
+
+export const deleteImage = (roomName, uri) => {
+    firebase.storage().ref(`${roomName}/${uri}`).delete()
+        .then(() => { })
+        .catch(err => { Alert.alert(err) });
+}

@@ -24,7 +24,7 @@ export default class InputChat extends React.Component {
 
     render() {
         return (<React.Fragment>
-            <AddImage />
+            <AddImage roomName={this.props.roomName} />
             <TextInput
                 style={styles.inp}
                 onChangeText={(val) => this.setState({ msg: val })}

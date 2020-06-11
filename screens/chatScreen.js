@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar, Alert } from 'react-native';
 import Message from '../components/message';
 import { sendMessageForDataBase } from '../components/data';
 import firebase from 'firebase';
 import { decode, encode } from 'base-64';
 import { AntDesign } from '@expo/vector-icons';
 import "../components/InputChat";
+import ImgMessage from '../components/ImgMessage';
 
 // To avoid a common warning
 import { YellowBox } from 'react-native';
@@ -32,6 +33,7 @@ export default class chatScreen extends React.Component {
             msgs: [],
             senderName: '',
             room: '',
+            imgs: []
         }
 
     }
@@ -80,6 +82,7 @@ export default class chatScreen extends React.Component {
         this.setState({ room: this.props.navigation.getParam("roomName") });
     }
 
+
     // shouldComponentUpdate() {
 
     // }
@@ -93,7 +96,8 @@ export default class chatScreen extends React.Component {
                         behavior={Platform.Os == "ios" ? "padding" : "height"}
 
                     >
-                        <ScrollView
+                        <ImgMessage roomName={this.getRoomName()} sender="obada" />
+                        {/* <ScrollView
                             style={styles.msgs}
                             ref={ref => this.scrollView = ref}
                             onContentSizeChange={(contentWidth, contentHeight) => {
@@ -114,7 +118,7 @@ export default class chatScreen extends React.Component {
                                     <Message text={item.msg} sender={item.sender} key={Math.random()} />
                                 ))}
                             </View>
-                        </ScrollView>
+                        </ScrollView> */}
                         <View style={styles.inpConatiner}>
                             <InputChat roomName={this.getRoomName()} />
                         </View>
@@ -167,6 +171,5 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     arr: {
-    }
-
+    },
 });
