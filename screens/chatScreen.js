@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar, Alert, ImageBackground } from 'react-native';
+import { StyleSheet, FlatList, View, Text, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import Message from '../components/message';
 import { sendMessageForDataBase } from '../components/data';
 import firebase from 'firebase';
@@ -8,20 +8,21 @@ import { AntDesign } from '@expo/vector-icons';
 import "../components/InputChat";
 import ImgMessage from '../components/ImgMessage';
 import { downloadAllImages, downloadOneImg } from '../components/data';
+import InputChat from '../components/InputChat';
+
 
 // To avoid a common warning
-import { YellowBox } from 'react-native';
-import _ from 'lodash';
-import { FlatList } from 'react-native-gesture-handler';
-import InputChat from '../components/InputChat';
-YellowBox.ignoreWarnings(['Setting a timer']);
-const _console = _.clone(console);
-console.log = message => {
-    if (message.indexOf('Setting a timer') <= -1) {
-        _console.log(message);
-    }
+// import { YellowBox } from 'react-native';
+// import _ from 'lodash';
+// // import { FlatList } from 'react-native-gesture-handler';
+// YellowBox.ignoreWarnings(['Setting a timer']);
+// const _console = _.clone(console);
+// console.log = message => {
+//     if (message.indexOf('Setting a timer') <= -1) {
+//         _console.log(message);
+//     }
 
-};
+// };
 
 
 export default class chatScreen extends React.Component {
@@ -30,11 +31,8 @@ export default class chatScreen extends React.Component {
         super(props);
         this.state = {
             message: '',
-            allMsg: [],
             msgs: [],
-            senderName: '',
-            room: '',
-            imgs: []
+            room: ''
         }
 
     }
@@ -46,25 +44,47 @@ export default class chatScreen extends React.Component {
             var messages = [];
             docs.forEach(function (doc) {
                 if (doc.data().type == 'txt') {
-                    messages.push({ msg: doc.data().msg, sender: doc.data().sender, type: 'txt' });
+                    messages.push({
+                        msg: doc.data().msg,
+                        sender: doc.data().sender,
+                        type: 'txt',
+                        endTime: doc.data().sendTime,
+                        key: Math.random().toString()
+                    });
                 }
                 else if (doc.data().type == 'img') {
-                    messages.push({ url: doc.data().url, sender: doc.data().sender, type: 'img' });
-
-                    downloadAllImages(roomName, imgUrl => {
-                        messages.forEach(msg => {
-                            if (msg.type == 'img') {
-                                // alert(url);
-                                msg.url = imgUrl;
-                            }
-                        })
-                    })
-
+                    messages.push({ url: doc.data().url, sender: doc.data().sender, type: 'img', key: Math.random().toString() });
                 }
             });
             this.setState({ msgs: [...messages] });
         });
     }
+
+    // getAllImages = () => {
+    //     firebase.firestore().collection(this.getRoomName()).orderBy("sendTime").onSnapshot(docs => {
+    //         docs.forEach(doc => {
+    //             if (doc.data().type == 'img') {
+    //                 firebase.storage().ref(this.getRoomName()).listAll().then(snap => {
+
+    //                     snap.items.forEach(itemRef => {
+    //                         itemRef.getDownloadURL().then(imgUrl => {
+    //                             this.setState({
+    //                                 imgs: [...this.state.imgs, {
+    //                                     url: imgUrl,
+    //                                     sender: doc.data().sender,
+    //                                     sendTime: doc.data().sendTime,
+    //                                     type: 'img',
+    //                                     key: Math.random().toString()
+    //                                 }]
+    //                             })
+    //                         })
+    //                     })
+    //                 })
+    //             }
+    //         })
+    //     })
+    // }
+
 
     UNSAFE_componentWillMount() {
         if (!global.btoa) { global.btoa = encode }
@@ -106,14 +126,55 @@ export default class chatScreen extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <StatusBar hidden />
-                <View source={require("../assets/bg.jpg")} style={styles.bgImg}>
+                <View style={styles.badgeChild}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
+                        <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
+                    </TouchableOpacity>
+                    <Text style={styles.badgetxt}>{this.state.room}</Text>
+                </View>
+
+                <View style={styles.bgImg}>
+                    <View style={styles.bgImgChild}>
+
+                    </View>
                     <KeyboardAvoidingView
                         behavior={Platform.Os == "ios" ? "padding" : "height"}
-
                     >
-                        {/* <ImgMessage roomName={this.getRoomName()} sender="obada" /> */}
-                        <ScrollView
+
+                        {/* <View style={styles.badge}> 
+                        <View style={styles.badgeChild}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
+                                <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
+                            </TouchableOpacity>
+                            <Text style={styles.badgetxt}>Hello</Text>
+                        </View>
+                        </View> */}
+
+                        <FlatList
+                            data={this.state.msgs}
+                            renderItem={({ item }) => {
+                                if (item.type == 'img') {
+                                    console.log(item.url);
+                                    return (
+                                        <ImgMessage sender={item.sender} uri={item.url} roomName={this.getRoomName()} />
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <Message text={item.msg} sender={item.sender} />
+                                    )
+                                }
+                            }
+                            }
+                            style={styles.msgs}
+                            ref={ref => this.scrollView = ref}
+                            onContentSizeChange={(contentWidth, contentHeight) => {
+                                this.scrollView.scrollToEnd({ animated: true });
+                            }}
+                        />
+
+
+                        {/* <ScrollView
                             style={styles.msgs}
                             ref={ref => this.scrollView = ref}
                             onContentSizeChange={(contentWidth, contentHeight) => {
@@ -134,8 +195,14 @@ export default class chatScreen extends React.Component {
                                     if (item.type == 'txt') { return <Message text={item.msg} sender={item.sender} key={Math.random()} /> }
                                     else if (item.type == 'img') { return <ImgMessage sender={item.sender} uri={item.url} key={Math.random()} roomName={this.getRoomName()} /> }
                                 })}
+
+                                {this.state.imgs.map(img => {
+                                    return (
+                                        <ImgMessage sender={img.sender} uri={img.url} roomName={this.getRoomName()} key={Math.random()} />
+                                    )
+                                })}
                             </View>
-                        </ScrollView>
+                        </ScrollView> */}
                         <View style={styles.inpConatiner}>
                             <InputChat roomName={this.getRoomName()} />
                         </View>
@@ -152,7 +219,6 @@ const styles = StyleSheet.create({
     },
     bgImg: {
         flex: 1,
-        resizeMode: 'cover',
         flexDirection: 'column-reverse',
         backgroundColor: "#f0f0f0"
     },
@@ -169,24 +235,28 @@ const styles = StyleSheet.create({
     },
     badge: {
         width: '100%',
-        paddingVertical: 20,
+        height: '30%',
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        // alignItems: 'center',
+        // justifyContent: 'center',
     },
     badgeChild: {
         width: '100%',
-        height: '80%',
+        height: '10%',
         alignItems: 'center',
+        justifyContent: 'center',
         // justifyContent: 'space-evenly',
         // justifyContent: "flex-start",
         flexDirection: 'row',
+        backgroundColor: 'white'
     },
     badgetxt: {
         fontSize: 20,
-        marginRight: '50%', // IF YOU REMOVE THIS ARROW AND TEXT GO TO CENETR
-        fontWeight: "bold"
+        marginRight: '50%',
+        fontWeight: "bold",
+        color: 'black'
     },
     arr: {
+        marginLeft: '30%' // IF THIS IS REMOVED ARROW AND TEXT WILL STICK TO EACH OTHER
     },
 });

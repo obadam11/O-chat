@@ -4,15 +4,15 @@ import { decode, encode } from 'base-64';
 
 
 // To avoid a common warning
-import { YellowBox, Alert } from 'react-native';
-import _ from 'lodash';
-YellowBox.ignoreWarnings(['Setting a timer']);
-const _console = _.clone(console);
-console.warn = message => {
-    if (message.indexOf('Setting a timer') <= -1) {
-        _console.warn(message);
-    }
-}
+// import { YellowBox, Alert } from 'react-native';
+// import _ from 'lodash';
+// YellowBox.ignoreWarnings(['Setting a timer']);
+// const _console = _.clone(console);
+// console.warn = message => {
+//     if (message.indexOf('Setting a timer') <= -1) {
+//         _console.warn(message);
+//     }
+// }
 
 
 const firebaseConfig = {
@@ -134,7 +134,7 @@ export const uploadImage = (uri, roomName) => {
     firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
         firebase.firestore().collection(roomName).doc().set({
             type: 'img',
-            url: uri,
+            // url: uri,
             sender: doc.data().name,
             sendTime: firebase.firestore.FieldValue.serverTimestamp()
         })
@@ -161,8 +161,6 @@ export const downloadAllImages = (roomName, callBack) => {
         snap.items.forEach(itemRef => {
             itemRef.getDownloadURL().then(imgUrl => {
                 callBack(imgUrl)
-
-
                     ;
             })
         })
@@ -185,8 +183,6 @@ export const downloadOneImg = (roomName, imgName, callBack) => {
         .catch(err => Alert.alert(err))
 }
 
-export const deleteImage = (roomName, uri) => {
-    firebase.storage().ref(`${roomName}/${uri}`).delete()
-        .then(() => { })
-        .catch(err => { Alert.alert(err) });
+export const deleteImage = async (roomName, uri) => {
+    await firebase.storage().ref(`${roomName}/${uri}`).delete()
 }

@@ -8,22 +8,12 @@ export default class ImgMessage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imgs: []
+            imgs: [],
+            me: null
         }
     }
 
     componentDidMount() {
-        // const getImg = () => {
-        //     let img = firebase.storage().ref(`${this.props.roomName}/second`);
-        //     img.getDownloadURL().then(url => {
-        //         console.log(url);
-        //         this.setState({ img: url })
-        //     })
-        //         .catch(err => alert(err));
-
-        // }
-        // getImg();
-
         // firebase.storage().ref(this.props.roomName).listAll().then(snap => {
         //     snap.items.forEach(itemRef => {
         //         itemRef.getDownloadURL().then(imgUrl => {
@@ -31,50 +21,69 @@ export default class ImgMessage extends Component {
         //         })
         //     })
         // })
-        downloadAllImages(this.props.roomName, (imgUrl) => {
-            this.setState({ imgs: this.state.imgs.concat(imgUrl) });
+
+
+        // downloadAllImages(this.props.roomName, (imgUrl) => {
+        //     this.setState({ imgs: this.state.imgs.concat(imgUrl) });
+        // })
+
+        this.changeState();
+    }
+
+    changeState = () => {
+        const thisUser = firebase.auth().currentUser.email;
+        firebase.firestore().collection("users").doc(thisUser).onSnapshot(doc => {
+            if (this.props.sender == doc.data().name) {
+                this.setState({ me: true })
+            }
+            else {
+                this.setState({ me: false });
+            }
         })
     }
 
     rendering = () => {
-        const thisUser = firebase.auth().currentUser.email;
-        firebase.firestore().collection("users").doc(thisUser).onSnapshot(doc => {
-            let thisUserName = doc.data().name;
-
-            if (this.props.sender == thisUserName) {
-                console.log(thisUserName);
-                return (<TouchableOpacity style={styles.imgCloud}>
-                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
-                    <Image
-                        source={{ uri: this.props.uri }}
-                        style={styles.tinyimg}
-                    />
-                </TouchableOpacity>)
-            }
-            else {
-                return (<TouchableOpacity style={styles.imgCloud}>
-                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
-                    <Image
-                        source={{ uri: this.props.uri }}
-                        style={styles.tinyimg}
-                    />
-                </TouchableOpacity>)
-            }
-        })
+        if (this.state.me) {
+            return (
+                <View style={styles.container}>
+                    <TouchableOpacity style={styles.imgCloud}>
+                        <Text style={styles.imgTxt}>{this.props.sender}</Text>
+                        <Image
+                            source={{ uri: this.props.uri }}
+                            style={styles.tinyimg}
+                        />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        else {
+            return (
+                <View style={styles.container2}>
+                    <TouchableOpacity style={styles.imgCloud2}>
+                        <Text style={styles.imgTxt2}>{this.props.sender}</Text>
+                        <Image
+                            source={{ uri: this.props.uri }}
+                            style={styles.tinyimg}
+                        />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
     }
 
     render() {
         return (
-            <View style={styles.container}>
+            <React.Fragment>
 
-                {/* {this.rendering()} */}
-                <TouchableOpacity style={styles.imgCloud}>
+
+                {this.rendering()}
+                {/* <TouchableOpacity style={styles.imgCloud}>
                     <Text style={styles.imgTxt}>{this.props.sender}</Text>
                     <Image
                         source={{ uri: this.props.uri }}
                         style={styles.tinyimg}
                     />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* {this.state.imgs.map(img => {
 
@@ -92,32 +101,53 @@ export default class ImgMessage extends Component {
                     )
 
                 })} */}
-            </View>
+            </React.Fragment>
+
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'flex-end',
+        marginRight: 10
+    },
+    container2: {
+        alignItems: 'flex-start',
+        marginLeft: 10
     },
     tinyimg: {
-        width: 100,
-        height: 100
+        width: 200,
+        height: 200
     },
     imgCloud: {
-        width: 140,
-        height: 140,
+        width: 250,
+        height: 250,
         backgroundColor: '#363636',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 20,
+        borderRadius: 30,
+        borderWidth: 1,
+        borderColor: 'black',
+        marginVertical: 10
+    },
+    imgCloud2: {
+        width: 250,
+        height: 250,
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 30,
         borderWidth: 1,
         borderColor: 'black',
         marginVertical: 10
     },
     imgTxt: {
-        color: '#fff'
+        color: '#fff',
+        marginBottom: 10
+    },
+    imgTxt2: {
+        color: '#000',
+        marginBottom: 10
     }
 });
