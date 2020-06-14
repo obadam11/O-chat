@@ -72,6 +72,17 @@ export function deleteUser(email) {
         .catch((err) => alert(err))
 }
 
+function addRoomToCollection(roomName) {
+    firebase.firestore().collection("rooms").doc(roomName).set({
+        name: roomName
+    })
+}
+function deleteRoomFromCollection(roomName) {
+    firebase.firestore().collection('rooms').doc(roomName).delete()
+        .then(() => { })
+        .catch(() => { })
+}
+
 // Create a root collection and post the first document
 export function createRoom(roomName, user1Email, user2email) {
 
@@ -83,6 +94,10 @@ export function createRoom(roomName, user1Email, user2email) {
         sendTime: firebase.firestore.FieldValue.serverTimestamp(),
         sender: 'bot'
     })
+        .then(() => {
+            addRoomToCollection(roomName)
+        })
+        .catch(err => { })
 }
 // When creating a room add it to the rooms list of each user 
 export function addRoomToUsers(secUserEmail, roomName) {
@@ -121,8 +136,8 @@ export function deleteRoomColl(roomName) {
     firebase.firestore().collection(roomName).get().then(docs => {
         docs.forEach(doc => {
             firebase.firestore().collection(roomName).doc(doc.id).delete()
-                .then(() => { })
-                .catch(err => alert(err))
+                .then(() => { deleteRoomFromCollection() })
+                .catch(err => { })
         })
     })
 }

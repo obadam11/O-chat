@@ -28,6 +28,7 @@ export default class AllRooms extends React.Component {
             return (
                 <View style={styles.noRooms}>
                     <Text style={styles.noRoomsTxt}>You have no rooms 😢</Text>
+                    <Text style={styles.noRoomsTxt2}>To add rooms click the add button at the bottom right</Text>
                 </View>
             )
         }
@@ -127,9 +128,11 @@ export default class AllRooms extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <TouchableOpacity style={styles.container} onPress={this.NavigateToroomScreen}>
-                    <AntDesign name="plus" size={24} color="black" />
-                </TouchableOpacity>
+                {/* <TouchableOpacity style={styles.container} onPress={this.NavigateToroomScreen}>
+                    <View style={styles.plus}>
+                        <AntDesign name="plus" size={24} color="#f0f0f0" />
+                    </View>
+                </TouchableOpacity> */}
 
                 {this.userWithNoRooms()}
 
@@ -150,6 +153,11 @@ export default class AllRooms extends React.Component {
                     {/* {this.displayRoom()} */}
 
                 </ScrollView>
+                <TouchableOpacity style={styles.container} onPress={this.NavigateToroomScreen}>
+                    <View style={styles.plus}>
+                        <AntDesign name="plus" size={24} color="#f0f0f0" />
+                    </View>
+                </TouchableOpacity>
             </React.Fragment>
         )
     }
@@ -160,19 +168,24 @@ const styles = StyleSheet.create({
         marginTop: 10,
         position: 'absolute',
         right: 10,
-        top: 15,
+        bottom: 15,
     },
     rooms: {
         width: '100%',
         height: "80%",
         lineHeight: 300,
         flexDirection: 'column',
-        marginTop: 50,
-        marginBottom: 10,
+        marginTop: 10,
+        marginBottom: 70,
     },
     noRoomsTxt: {
         color: 'grey',
-        fontSize: 17
+        fontSize: 25,
+        marginBottom: 20
+    },
+    noRoomsTxt2: {
+        color: 'grey',
+        fontSize: 16
     },
     noRooms: {
         height: '100%',
@@ -180,6 +193,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     bar: {
-
+    },
+    plus: {
+        backgroundColor: '#363636',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 50,
     }
 });

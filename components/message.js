@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from 'firebase'
+import 'firebase/firestore';
 
 
 export default class Message extends React.Component {
@@ -26,17 +27,38 @@ export default class Message extends React.Component {
             }
         })
     }
+
+    deleteMsg = () => {
+        const del = () => {
+            firebase.firestore().collection(this.props.roomName).get().then(docs => {
+                docs.forEach(doc => {
+                    console.log(this.props.sendTime);
+                    console.log(doc.data().sendTime);
+                    if (doc.data().sendTime.toString() == this.props.sendTime.toString()) {
+                        firebase.firestore().collection(this.props.roomName).doc(doc.id).delete()
+                            .then(() => { })
+                            .catch(err => { });
+                    }
+                })
+            })
+        }
+
+        Alert.alert('Delete?', "Are you sure you want to delete this message?", [
+            { text: 'Confirm', onPress: del },
+            { text: 'Cancel' }
+        ])
+    }
     condition = () => {
         if (this.state.me == 'true') {
             return (
-                <View style={styles.container}>
+                <TouchableOpacity style={styles.container} onLongPress={this.deleteMsg}>
                     <View style={styles.cloud}>
                         <View style={styles.allText}>
                             <Text style={styles.senderName}>{this.props.sender}</Text>
                             <Text style={styles.test}>{this.props.text}</Text>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             )
         }
         else if (this.state.me == 'none') {
@@ -88,7 +110,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 10,
         alignSelf: 'flex-end',
-        marginRight: 10
+        marginRight: 10,
     },
     container2: {
         flexDirection: 'column',

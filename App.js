@@ -5,6 +5,8 @@ import Chat from "./screens/chatScreen";
 import Navigator from './homeNavigation';
 import AllRooms from './screens/allRooms';
 
+console.disableYellowBox = true
+
 export default function App() {
   return (
     <React.Fragment>

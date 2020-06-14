@@ -48,7 +48,7 @@ export default class chatScreen extends React.Component {
                         msg: doc.data().msg,
                         sender: doc.data().sender,
                         type: 'txt',
-                        endTime: doc.data().sendTime,
+                        sendTime: doc.data().sendTime,
                         key: Math.random().toString()
                     });
                 }
@@ -59,31 +59,6 @@ export default class chatScreen extends React.Component {
             this.setState({ msgs: [...messages] });
         });
     }
-
-    // getAllImages = () => {
-    //     firebase.firestore().collection(this.getRoomName()).orderBy("sendTime").onSnapshot(docs => {
-    //         docs.forEach(doc => {
-    //             if (doc.data().type == 'img') {
-    //                 firebase.storage().ref(this.getRoomName()).listAll().then(snap => {
-
-    //                     snap.items.forEach(itemRef => {
-    //                         itemRef.getDownloadURL().then(imgUrl => {
-    //                             this.setState({
-    //                                 imgs: [...this.state.imgs, {
-    //                                     url: imgUrl,
-    //                                     sender: doc.data().sender,
-    //                                     sendTime: doc.data().sendTime,
-    //                                     type: 'img',
-    //                                     key: Math.random().toString()
-    //                                 }]
-    //                             })
-    //                         })
-    //                     })
-    //                 })
-    //             }
-    //         })
-    //     })
-    // }
 
 
     UNSAFE_componentWillMount() {
@@ -126,6 +101,7 @@ export default class chatScreen extends React.Component {
     render() {
         return (
             <React.Fragment>
+                <StatusBar hidden />
                 <View style={styles.badgeChild}>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
                         <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
@@ -161,7 +137,7 @@ export default class chatScreen extends React.Component {
                                 }
                                 else {
                                     return (
-                                        <Message text={item.msg} sender={item.sender} />
+                                        <Message text={item.msg} sender={item.sender} roomName={this.getRoomName()} sendTime={item.sendTime} />
                                     )
                                 }
                             }
@@ -257,6 +233,6 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     arr: {
-        marginLeft: '30%' // IF THIS IS REMOVED ARROW AND TEXT WILL STICK TO EACH OTHER
+        marginLeft: '10%' // IF THIS IS REMOVED ARROW AND TEXT WILL STICK TO EACH OTHER
     },
 });
