@@ -4,6 +4,7 @@ import Chat from './screens/chatScreen';
 import Login from './screens/Login';
 import roomScreen from './screens/roomScreen';
 import AllRooms from './screens/allRooms';
+import Profile from './screens/profile';
 
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
@@ -26,6 +27,9 @@ const screens = {
             headerTitleStyle: { textAlign: 'center' },
             headerRight: () => <View />
         }
+    },
+    Profile: {
+        screen: Profile
     },
     roomScreen: {
         screen: roomScreen,

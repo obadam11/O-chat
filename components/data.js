@@ -1,6 +1,9 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
 import { decode, encode } from 'base-64';
+import * as ImagePicker from 'expo-image-picker';
+import { Alert } from 'react-native';
+import { call } from 'react-native-reanimated';
 
 
 // To avoid a common warning
@@ -52,7 +55,6 @@ export function sendMessageForDataBase(roomName, msg) {
             sender: doc.data().name
         })
     })
-
 };
 
 
@@ -61,7 +63,22 @@ export function addUser(email, uid, name) {
     firebase.firestore().collection("users").doc(email).set({
         uid: uid,
         name: name,
-        rooms: []
+        rooms: [],
+        img: 'none'
+    })
+}
+
+export function getUserNameFromDB(callBack) {
+    const user = firebase.auth().currentUser.email;
+    firebase.firestore().collection("users").doc(user).get().then(doc => {
+        callBack(doc.data().name)
+    })
+}
+
+export function userImage(callBack) {
+    const user = firebase.auth().currentUser.email;
+    firebase.firestore().collection('users').doc(user).get().then(doc => {
+        callBack(doc.data().img)
     })
 }
 
@@ -200,4 +217,81 @@ export const downloadOneImg = (roomName, imgName, callBack) => {
 
 export const deleteImage = async (roomName, uri) => {
     await firebase.storage().ref(`${roomName}/${uri}`).delete()
+}
+
+export const uplaodProfileImg = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+    })
+
+    if (!result.cancelled) {
+        const userEmail = firebase.auth().currentUser.email;
+        let referance = firebase.storage().ref().child(`users/${userEmail}`);
+        const response = await fetch(result.uri);
+        const blob = await response.blob();
+
+        referance.put(blob).then(() => {
+            firebase.storage().ref(`users/${userEmail}`).getDownloadURL().then(imgUrl => {
+                firebase.firestore().collection('users').doc(userEmail).update({
+                    img: imgUrl
+                })
+            })
+                .catch(err => Alert.alert(err))
+        })
+    }
+}
+
+export const getUserEmailFromDB = (callBack) => {
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
+        callBack(doc.id);
+    })
+}
+
+export function deleteAccount(callBack) {
+    deleteUser(firebase.auth().currentUser.email);
+    firebase.auth().currentUser.delete().then(() => {
+        callBack();
+    })
+    // .catch(err => { Alert.alert(err) })
+}
+
+export function logOut(callBack) {
+    firebase.auth().signOut()
+        .then(() => { callBack() })
+        .catch(err => { Alert.alert(err) })
+}
+
+export function changeUserName(oldName, newName, callBack) {
+    const currentUser = firebase.auth().currentUser.email;
+
+    firebase.firestore().collection('users').doc(currentUser).update({
+        name: newName
+    })
+        .then(() => {
+            firebase.firestore().collection('users').doc(currentUser).get().then(doc => {
+                doc.data().rooms.forEach(room => {
+                    firebase.firestore().collection(room).get().then(docs => {
+                        docs.forEach(msg => {
+                            if (msg.id != 'fstmsg') {
+                                if (msg.sender == oldName) {
+                                    firebase.firestore().collection(room).doc(msg.id).update({
+                                        sender: newName
+                                    })
+                                        .then(() => { console.log('good') })
+                                        .catch((err) => console.log(err))
+                                }
+                            }
+                        })
+                    })
+                })
+            })
+            callBack()
+        })
+        .catch((err) => Alert.alert(err));
+
+
+
 }

@@ -65,77 +65,22 @@ export default class AllRooms extends React.Component {
 
     componentDidMount() {
         const userRooms = () => {
+            console.log(this.state.rooms)
+            // if (this.state.rooms.length > 0) {
             const userEmail = firebase.auth().currentUser.email;
             firebase.firestore().collection("users").doc(userEmail).onSnapshot(doc => {
+                console.log(doc.data().rooms)
                 this.setState({ rooms: [...doc.data().rooms] })
             })
+            // }
         }
-
-        // const userRooms = () => {
-        //     firebase.firestore().collection("users").doc(firebase.auth().currentUser.email).onSnapshot(doc => {
-        //         this.setState({ rooms: [...doc.data().rooms] })
-
-        //         this.state.rooms.forEach(room => {
-        //             console.log(room);
-        //             const userEmail = firebase.auth().currentUser.email;
-        //             firebase.firestore().collection(room).doc("fstmsg").get().then(doc2Users => {
-        //                 const user1 = doc2Users.data().user1Email;
-        //                 const user2 = doc2Users.data().user2email;
-        //                 let friendEmail = (user1 != userEmail) ? user1 : user2;
-        //                 firebase.firestore().collection("users").doc(friendEmail).get().then(doc => {
-        //                     console.log(doc.data().name);
-        //                     this.setState({ roomsWithFriends: this.state.roomsWithFriends.concat({ name: room, friend: doc.data().name }) })
-        //                     console.log(this.state.roomsWithFriends);
-        //                 })
-        //             })
-
-        //         })
-        //     })
-        // }
-
-
         userRooms();
     }
 
-    // displayRoom = () => {
-    //     if (this.state.roomsWithFriends.length) {
-    //         console.log(this.state.roomsWithFriends);
-    //         return (
-    //             this.state.roomsWithFriends.map(part => {
-    //                 return (
-    //                     <TouchableOpacity
-    //                         onPress={() => this.NavigateToChatScreen(part.name)}
-    //                         key={part.name}
-    //                         onLongPress={() => this.deleteRoom(part.name)}
-    //                         delayLongPress={600}
-    //                     >
-    //                         <RoomView name={part.name} key={part.name} friend={part.friend} />
-    //                     </TouchableOpacity>
-    //                 )
-    //             })
-    //         )
 
-    //     }
-    //     else {
-    //         return (
-    //             <React.Fragment></React.Fragment>
-    //         )
-    //     }
-    // }
-
-
-
-    render() {
-        return (
-            <React.Fragment>
-                {/* <TouchableOpacity style={styles.container} onPress={this.NavigateToroomScreen}>
-                    <View style={styles.plus}>
-                        <AntDesign name="plus" size={24} color="#f0f0f0" />
-                    </View>
-                </TouchableOpacity> */}
-
-                {this.userWithNoRooms()}
-
+    renderingRooms() {
+        if (this.state.rooms.length > 0) {
+            return (
                 <ScrollView style={styles.rooms}>
                     {this.state.rooms.map(room => {
                         return (
@@ -149,10 +94,38 @@ export default class AllRooms extends React.Component {
                             </TouchableOpacity>
                         )
                     })}
-
-                    {/* {this.displayRoom()} */}
-
                 </ScrollView>
+            )
+        }
+    }
+
+    render() {
+
+        return (
+            <React.Fragment>
+                {this.userWithNoRooms()}
+
+                <ScrollView style={styles.rooms}>
+                    {/* {this.state.rooms.map(room => {
+                        console.log(rooms);
+                        (
+                            <TouchableOpacity
+                                onPress={() => this.NavigateToChatScreen(room)}
+                                key={room}
+                                onLongPress={() => this.deleteRoom(room)}
+                                delayLongPress={600}
+                            >
+                                <RoomView name={room} key={room} />
+                            </TouchableOpacity>
+                        )
+                    })} */}
+                    {this.renderingRooms()}
+                </ScrollView>
+
+                <TouchableOpacity style={styles.profile} onPress={() => { this.props.navigation.navigate("Profile") }}>
+                    <AntDesign name="profile" size={50} color="black" />
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.container} onPress={this.NavigateToroomScreen}>
                     <View style={styles.plus}>
                         <AntDesign name="plus" size={24} color="#f0f0f0" />
@@ -201,5 +174,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50,
+    },
+    profile: {
+        marginTop: 10,
+        position: 'absolute',
+        left: 10,
+        bottom: 15,
     }
 });

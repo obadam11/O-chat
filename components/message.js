@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Image } from 'react-native';
 import firebase from 'firebase'
 import 'firebase/firestore';
 
@@ -9,7 +8,9 @@ export default class Message extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            me: undefined
+            me: undefined,
+            profileImg: require('../assets/img/profile.png'),
+            myProfileImg: require("../assets/img/profile.png")
         }
     }
 
@@ -28,12 +29,53 @@ export default class Message extends React.Component {
         })
     }
 
+    getUserImage = (userEmail) => {
+        firebase.firestore().collection('users').doc(userEmail).get().then(doc => {
+            this.setState({ profileImg: { uri: doc.data().img } })
+        })
+            .catch(err => console.log(err));
+    }
+
+    getFriendProfileImg = () => {
+        // const currentUser = firebase.auth().currentUser.email;
+        // firebase.firestore().collection('users').doc(currentUser).onSnapshot(doc => {
+        //     if (this.props.sender != doc.data().name) {
+        //         this.setState({ profileImg: { uri: doc.data().img } });
+        //     }
+        // })
+
+
+        const currentUser = firebase.auth().currentUser.email;
+        firebase.firestore().collection(this.props.roomName).doc('fstmsg').get().then(doc => {
+            if (doc.data().user1Email == currentUser) {
+                this.getUserImage(doc.data().user2email, false)
+            }
+            else {
+                this.getUserImage(doc.data().user1Email, false)
+            }
+        })
+            .catch(err => console.log(err));
+    }
+
+
+
+
+    getMyProfileImg = () => {
+        // const currentUser = firebase.auth().currentUser.email;
+        // firebase.firestore().collection(this.props.roomName).doc('fstmsg').get().then(doc => {
+
+
+
+        firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
+            this.setState({ myProfileImg: { uri: doc.data().img } })
+        })
+            .catch(err => console.log(err));
+    }
+
     deleteMsg = () => {
         const del = () => {
             firebase.firestore().collection(this.props.roomName).get().then(docs => {
                 docs.forEach(doc => {
-                    console.log(this.props.sendTime);
-                    console.log(doc.data().sendTime);
                     if (doc.data().sendTime.toString() == this.props.sendTime.toString()) {
                         firebase.firestore().collection(this.props.roomName).doc(doc.id).delete()
                             .then(() => { })
@@ -51,14 +93,17 @@ export default class Message extends React.Component {
     condition = () => {
         if (this.state.me == 'true') {
             return (
-                <TouchableOpacity style={styles.container} onLongPress={this.deleteMsg}>
-                    <View style={styles.cloud}>
-                        <View style={styles.allText}>
-                            <Text style={styles.senderName}>{this.props.sender}</Text>
-                            <Text style={styles.test}>{this.props.text}</Text>
+                <View style={styles.main2}>
+                    <TouchableOpacity style={styles.container} onLongPress={this.deleteMsg}>
+                        <View style={styles.cloud}>
+                            <View style={styles.allText}>
+                                <Text style={styles.senderName}>{this.props.sender}</Text>
+                                <Text style={styles.test}>{this.props.text}</Text>
+                            </View>
                         </View>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                    <Image source={this.state.myProfileImg} style={styles.profileImg2} />
+                </View>
             )
         }
         else if (this.state.me == 'none') {
@@ -76,11 +121,14 @@ export default class Message extends React.Component {
         }
         else {
             return (
-                <View style={styles.container2}>
-                    <View style={styles.cloud2}>
-                        <View style={styles.allText}>
-                            <Text style={styles.senderName2}>{this.props.sender}</Text>
-                            <Text style={styles.test2}>{this.props.text}</Text>
+                <View style={styles.main}>
+                    <Image source={this.state.profileImg} style={styles.profileImg} />
+                    <View style={styles.container2}>
+                        <View style={styles.cloud2}>
+                            <View style={styles.allText}>
+                                <Text style={styles.senderName2}>{this.props.sender}</Text>
+                                <Text style={styles.test2}>{this.props.text}</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -90,11 +138,10 @@ export default class Message extends React.Component {
 
     componentDidMount() {
         this.changeState();
+        this.getFriendProfileImg();
+        this.getMyProfileImg();
+        console.log(this.state.myProfileImg);
     }
-
-    // shouldComponentUpdate() {
-    //     // return false;
-    // }
 
 
     render() {
@@ -117,7 +164,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 10,
         alignSelf: 'flex-start',
-        marginLeft: 10
+        marginLeft: 10,
     },
     container3: {
         flexDirection: 'column',
@@ -137,7 +184,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         maxWidth: 325,
         padding: 5,
-        borderRadius: 10,
+        borderRadius: 20,
+        borderBottomEndRadius: 5,
         borderWidth: 1,
         borderColor: 'black',
         backgroundColor: '#383838',
@@ -148,7 +196,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         maxWidth: 325,
         padding: 5,
-        borderRadius: 10,
+        borderRadius: 20,
+        borderBottomStartRadius: 5,
         borderWidth: 1,
         borderColor: 'black',
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
@@ -177,5 +226,26 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black',
         textAlign: 'center'
+    },
+    profileImg: {
+        width: 50,
+        height: 50,
+        borderRadius: 15
+    },
+    main: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 15
+    },
+    profileImg2: {
+        width: 50,
+        height: 50,
+        borderRadius: 15
+    },
+    main2: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 15,
+        alignSelf: 'flex-end'
     }
 });

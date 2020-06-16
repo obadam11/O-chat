@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, FlatList, View, Text, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { StyleSheet, FlatList, View, Text, KeyboardAvoidingView, TouchableOpacity, Platform, StatusBar, Alert } from 'react-native';
 import Message from '../components/message';
 import { sendMessageForDataBase } from '../components/data';
 import firebase from 'firebase';
@@ -9,6 +9,8 @@ import "../components/InputChat";
 import ImgMessage from '../components/ImgMessage';
 import { downloadAllImages, downloadOneImg } from '../components/data';
 import InputChat from '../components/InputChat';
+// import SoundPlayer from 'react-native-sound-player'
+
 
 
 // To avoid a common warning
@@ -36,6 +38,16 @@ export default class chatScreen extends React.Component {
         }
 
     }
+
+    // playSoundEffect = () => {
+    //     try {
+    //         // SoundPlayer.playSoundFile('msg2', 'mp3');
+    //         SoundPlayer.playUrl('https://notificationsounds.com/notification-sounds/done-for-you-612#play')
+    //     }
+    //     catch (err) {
+    //         console.log(err);
+    //     }
+    // }
 
 
     getDataBase = () => {
@@ -89,6 +101,7 @@ export default class chatScreen extends React.Component {
 
 
     componentDidMount() {
+        // this.playSoundEffect();
         this.getDataBase();
         this.setState({ room: this.props.navigation.getParam("roomName") });
     }

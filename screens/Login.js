@@ -166,9 +166,9 @@ export default class Login extends React.Component {
         this.setState({ isLoading: true });
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => {
-                this.props.navigation.navigate("AllRooms")
                 let user = firebase.auth().currentUser;
                 addUser(this.state.email, user.uid, this.state.name);
+                this.props.navigation.navigate("AllRooms")
                 this.setState({ email: '', password: '', isLoading: false });
 
             })
