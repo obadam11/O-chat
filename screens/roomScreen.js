@@ -1,10 +1,8 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { createRoom, addRoomToUsers } from '../components/data';
+import { createRoom, addRoomToUsers, emailExsists } from '../components/data';
 import RoomNameText from '../components/roomNameText';
-import firebase from 'firebase';
-import 'firebase/firestore';
 
 
 export default class rommScreen extends React.Component {
@@ -13,6 +11,7 @@ export default class rommScreen extends React.Component {
         this.state = {
             userEmail: '',
             roomName: '',
+            availableEmail: null
         }
     }
 
@@ -59,6 +58,15 @@ export default class rommScreen extends React.Component {
     //     }
     // }
 
+    // changeEmailHandler = (val) => {
+    //     // this.setState({ userEmail: val });
+    //     emailExsists(val, () => {
+    //         this.setState({ availableEmail: true })
+    //     }, () => {
+    //         this.setState({ availableEmail: false })
+    //     });
+    // }
+
 
     render() {
         // this.available();
@@ -72,7 +80,8 @@ export default class rommScreen extends React.Component {
                         <TextInput
                             style={styles.userEmail}
                             placeholder="Enter User's Email"
-                            onChangeText={(val) => this.setState({ userEmail: val })}
+                            // onChangeText={(val) => this.changeEmailHandler(val)}
+                            onChangeText={val => { this.setState({ userEmail: val }) }}
                             value={this.state.userEmail}
                             autoCapitalize="none"
                         />
@@ -125,17 +134,4 @@ const styles = StyleSheet.create({
         width: '75%',
         textAlign: "center"
     },
-    // btn: {
-    //     width: 80,
-    //     height: 80,
-    //     borderRadius: 40,
-    //     backgroundColor: '#363636',
-    //     justifyContent: 'center',
-    //     marginTop: 20,
-    //     alignItems: 'center'
-    // },
-    // btnTxt: {
-    //     textAlign: 'center',
-    //     color: 'white'
-    // }
 })

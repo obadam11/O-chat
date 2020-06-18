@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import { uploadImage } from './data';
 import { Entypo } from '@expo/vector-icons';
 import firebase from 'firebase';
+import { getTime } from './data';
 
 export default class AddImage extends React.Component {
     constructor(props) {
@@ -88,7 +89,8 @@ export default class AddImage extends React.Component {
                                     type: 'img',
                                     sendTime: firebase.firestore.FieldValue.serverTimestamp(),
                                     url: imgUrl,
-                                    sender: doc.data().name
+                                    sender: doc.data().name,
+                                    time: getTime()
                                 })
                                     .catch(err => { console.log(err) })
                             })
@@ -167,7 +169,8 @@ export default class AddImage extends React.Component {
                                     type: 'img',
                                     sendTime: firebase.firestore.FieldValue.serverTimestamp(),
                                     url: imgUrl,
-                                    sender: doc.data().name
+                                    sender: doc.data().name,
+                                    time: getTime()
                                 })
                                     .then(() => { alert("Celebrate😍") })
                                     .catch(err => { console.log(err) })

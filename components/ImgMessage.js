@@ -8,25 +8,11 @@ export default class ImgMessage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imgs: [],
             me: null
         }
     }
 
     componentDidMount() {
-        // firebase.storage().ref(this.props.roomName).listAll().then(snap => {
-        //     snap.items.forEach(itemRef => {
-        //         itemRef.getDownloadURL().then(imgUrl => {
-        //             this.setState({ imgs: this.state.imgs.concat(imgUrl) });
-        //         })
-        //     })
-        // })
-
-
-        // downloadAllImages(this.props.roomName, (imgUrl) => {
-        //     this.setState({ imgs: this.state.imgs.concat(imgUrl) });
-        // })
-
         this.changeState();
     }
 
@@ -52,6 +38,7 @@ export default class ImgMessage extends Component {
                             source={{ uri: this.props.uri }}
                             style={styles.tinyimg}
                         />
+                        <Text style={styles.time}>{this.props.time}</Text>
                     </TouchableOpacity>
                 </View>
             )
@@ -65,6 +52,7 @@ export default class ImgMessage extends Component {
                             source={{ uri: this.props.uri }}
                             style={styles.tinyimg}
                         />
+                        <Text style={styles.time}>{this.props.time}</Text>
                     </TouchableOpacity>
                 </View>
             )
@@ -74,33 +62,7 @@ export default class ImgMessage extends Component {
     render() {
         return (
             <React.Fragment>
-
-
                 {this.rendering()}
-                {/* <TouchableOpacity style={styles.imgCloud}>
-                    <Text style={styles.imgTxt}>{this.props.sender}</Text>
-                    <Image
-                        source={{ uri: this.props.uri }}
-                        style={styles.tinyimg}
-                    />
-                </TouchableOpacity> */}
-
-                {/* {this.state.imgs.map(img => {
-
-                    return (
-                        <TouchableOpacity style={styles.imgCloud} key={img}>
-                            <Text style={styles.imgTxt}>{this.props.sender}</Text>
-                            <Image
-                                // source={{ uri: img }}
-                                source={{ uri: this.props.uri }}
-                                style={styles.tinyimg}
-                                key={img}
-                            />
-                        </TouchableOpacity>
-
-                    )
-
-                })} */}
             </React.Fragment>
 
         )
@@ -149,5 +111,9 @@ const styles = StyleSheet.create({
     imgTxt2: {
         color: '#000',
         marginBottom: 10
+    },
+    time: {
+        fontSize: 10,
+        color: 'gray'
     }
 });

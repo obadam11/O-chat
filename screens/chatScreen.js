@@ -48,24 +48,33 @@ export default class chatScreen extends React.Component {
     //         console.log(err);
     //     }
     // }
-
+    putImgsInState = (url) => {
+        this.setState({ imgs: this.state.imgs.concat({ url: url }) })
+    }
 
     getDataBase = () => {
         const roomName = this.getRoomName();
         firebase.firestore().collection(roomName).orderBy("sendTime").onSnapshot(docs => {
             var messages = [];
-            docs.forEach(function (doc) {
+            docs.forEach((doc) => {
                 if (doc.data().type == 'txt') {
                     messages.push({
                         msg: doc.data().msg,
                         sender: doc.data().sender,
                         type: 'txt',
                         sendTime: doc.data().sendTime,
-                        key: Math.random().toString()
+                        key: Math.random().toString(),
+                        time: doc.data().time
                     });
                 }
                 else if (doc.data().type == 'img') {
-                    messages.push({ url: doc.data().url, sender: doc.data().sender, type: 'img', key: Math.random().toString() });
+                    messages.push({
+                        url: doc.data().url,
+                        sender: doc.data().sender,
+                        type: 'img',
+                        key: Math.random().toString(),
+                        time: doc.data().time
+                    });
                 }
             });
             this.setState({ msgs: [...messages] });
@@ -73,43 +82,38 @@ export default class chatScreen extends React.Component {
     }
 
 
-    UNSAFE_componentWillMount() {
-        if (!global.btoa) { global.btoa = encode }
-        if (!global.atob) { global.atob = decode }
+    // UNSAFE_componentWillMount() {
+    //     if (!global.btoa) { global.btoa = encode }
+    //     if (!global.atob) { global.atob = decode }
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+    //     if (!firebase.apps.length) {
+    //         firebase.initializeApp(firebaseConfig);
+    //     }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDlTYCFtvZ-bohe7kjzbOLSryMshurBeEg",
-            authDomain: "todo-list-68c0e.firebaseapp.com",
-            databaseURL: "https://todo-list-68c0e.firebaseio.com",
-            projectId: "todo-list-68c0e",
-            storageBucket: "todo-list-68c0e.appspot.com",
-            messagingSenderId: "306762454858",
-            appId: "1:306762454858:web:dd676a64dd511e758993b3",
-            measurementId: "G-8CYW4DPGK8"
-        };
+    //     const firebaseConfig = {
+    //         apiKey: "AIzaSyDlTYCFtvZ-bohe7kjzbOLSryMshurBeEg",
+    //         authDomain: "todo-list-68c0e.firebaseapp.com",
+    //         databaseURL: "https://todo-list-68c0e.firebaseio.com",
+    //         projectId: "todo-list-68c0e",
+    //         storageBucket: "todo-list-68c0e.appspot.com",
+    //         messagingSenderId: "306762454858",
+    //         appId: "1:306762454858:web:dd676a64dd511e758993b3",
+    //         measurementId: "G-8CYW4DPGK8"
+    //     };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-    }
+    //     if (!firebase.apps.length) {
+    //         firebase.initializeApp(firebaseConfig);
+    //     }
+    // }
 
     getRoomName = () => this.props.navigation.getParam('roomName');
 
 
     componentDidMount() {
-        // this.playSoundEffect();
         this.getDataBase();
         this.setState({ room: this.props.navigation.getParam("roomName") });
     }
 
-
-    // shouldComponentUpdate() {
-
-    // }
 
     render() {
         return (
@@ -145,12 +149,12 @@ export default class chatScreen extends React.Component {
                                 if (item.type == 'img') {
                                     console.log(item.url);
                                     return (
-                                        <ImgMessage sender={item.sender} uri={item.url} roomName={this.getRoomName()} />
+                                        <ImgMessage sender={item.sender} uri={item.url} roomName={this.getRoomName()} time={item.time} />
                                     )
                                 }
                                 else {
                                     return (
-                                        <Message text={item.msg} sender={item.sender} roomName={this.getRoomName()} sendTime={item.sendTime} />
+                                        <Message text={item.msg} sender={item.sender} roomName={this.getRoomName()} sendTime={item.sendTime} time={item.time} />
                                     )
                                 }
                             }
@@ -163,35 +167,7 @@ export default class chatScreen extends React.Component {
                         />
 
 
-                        {/* <ScrollView
-                            style={styles.msgs}
-                            ref={ref => this.scrollView = ref}
-                            onContentSizeChange={(contentWidth, contentHeight) => {
-                                this.scrollView.scrollToEnd({ animated: true });
-                            }}
-                            stickyHeaderIndices={[0]}
-                        >
-                            <View style={styles.badge}>
-                                <View style={styles.badgeChild}>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("AllRooms")}>
-                                        <AntDesign name="arrowleft" size={24} color="black" style={styles.arr} />
-                                    </TouchableOpacity>
-                                    <Text style={styles.badgetxt}>{this.state.room}</Text>
-                                </View>
-                            </View>
-                            <View>
-                                {this.state.msgs.map(item => {
-                                    if (item.type == 'txt') { return <Message text={item.msg} sender={item.sender} key={Math.random()} /> }
-                                    else if (item.type == 'img') { return <ImgMessage sender={item.sender} uri={item.url} key={Math.random()} roomName={this.getRoomName()} /> }
-                                })}
 
-                                {this.state.imgs.map(img => {
-                                    return (
-                                        <ImgMessage sender={img.sender} uri={img.url} roomName={this.getRoomName()} key={Math.random()} />
-                                    )
-                                })}
-                            </View>
-                        </ScrollView> */}
                         <View style={styles.inpConatiner}>
                             <InputChat roomName={this.getRoomName()} />
                         </View>

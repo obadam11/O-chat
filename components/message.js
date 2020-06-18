@@ -37,14 +37,6 @@ export default class Message extends React.Component {
     }
 
     getFriendProfileImg = () => {
-        // const currentUser = firebase.auth().currentUser.email;
-        // firebase.firestore().collection('users').doc(currentUser).onSnapshot(doc => {
-        //     if (this.props.sender != doc.data().name) {
-        //         this.setState({ profileImg: { uri: doc.data().img } });
-        //     }
-        // })
-
-
         const currentUser = firebase.auth().currentUser.email;
         firebase.firestore().collection(this.props.roomName).doc('fstmsg').get().then(doc => {
             if (doc.data().user1Email == currentUser) {
@@ -57,15 +49,7 @@ export default class Message extends React.Component {
             .catch(err => console.log(err));
     }
 
-
-
-
     getMyProfileImg = () => {
-        // const currentUser = firebase.auth().currentUser.email;
-        // firebase.firestore().collection(this.props.roomName).doc('fstmsg').get().then(doc => {
-
-
-
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
             this.setState({ myProfileImg: { uri: doc.data().img } })
         })
@@ -99,6 +83,7 @@ export default class Message extends React.Component {
                             <View style={styles.allText}>
                                 <Text style={styles.senderName}>{this.props.sender}</Text>
                                 <Text style={styles.test}>{this.props.text}</Text>
+                                <Text style={styles.time}>{this.props.time}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -128,6 +113,7 @@ export default class Message extends React.Component {
                             <View style={styles.allText}>
                                 <Text style={styles.senderName2}>{this.props.sender}</Text>
                                 <Text style={styles.test2}>{this.props.text}</Text>
+                                <Text style={styles.time}>{this.props.time}</Text>
                             </View>
                         </View>
                     </View>
@@ -140,7 +126,7 @@ export default class Message extends React.Component {
         this.changeState();
         this.getFriendProfileImg();
         this.getMyProfileImg();
-        console.log(this.state.myProfileImg);
+
     }
 
 
@@ -247,5 +233,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 15,
         alignSelf: 'flex-end'
+    },
+    time: {
+        color: 'gray',
+        fontSize: 10
     }
 });

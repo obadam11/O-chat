@@ -49,19 +49,6 @@ export default function Profile({ navigation }) {
             <TouchableOpacity onPress={changeProfileImageHandler}>
                 <Image source={src} style={styles.img} />
             </TouchableOpacity>
-
-            <View style={styles.usernameMaster}>
-                <Text style={styles.usernameTxt}>Username: </Text>
-                <TextInput
-                    style={styles.username}
-                    placeholder='username'
-                    placeholderTextColor="#363636"
-                    onChangeText={(val) => { setUserName(val) }}
-                    value={userName}
-                    autoCorrect={false}
-                />
-            </View>
-
             <View style={styles.btns}>
 
                 <TouchableOpacity style={styles.logOut} onPress={() => logOut(() => { navigation.navigate("Login") })}>
@@ -70,10 +57,6 @@ export default function Profile({ navigation }) {
                 <TouchableOpacity style={styles.logOut} onPress={() => deleteAccount(() => { navigation.navigate("Login") })}>
                     <Text style={styles.logOutTxt}>Delete Account</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.logOut} onPress={() => { changeUserName(userName, oldUserName, () => { navigation.navigate("AllRooms") }) }}>
-                    <Text style={styles.logOutTxt}>Save Changes</Text>
-                </TouchableOpacity>
-
             </View>
 
         </View>
@@ -104,6 +87,9 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     btns: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
     },
     logOut: {
         backgroundColor: '#363636',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { createRoom, addRoomToUsers } from '../components/data';
+import { createRoom, addRoomToUsers, emailExsists } from '../components/data';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import 'react-navigation';
@@ -9,6 +9,7 @@ import 'react-navigation';
 export default function RoomNameText({ navigation, text, email }) {
 
     const [isAvailbale, setIsAvailable] = useState(false);
+    const [emailAvailbale, setEmailAvailbale] = useState(false);
 
     const available = () => {
         console.log('here');
@@ -33,7 +34,21 @@ export default function RoomNameText({ navigation, text, email }) {
             addRoomToUsers(email, text);
             navigation.navigate("AllRooms");
         }
-        creatingRoom();
+
+        emailExsists(email, () => {
+            setEmailAvailbale(true)
+            console.log(true);
+        }, () => {
+            setEmailAvailbale(false);
+            console.log(false);
+        })
+
+        if (emailAvailbale) {
+            creatingRoom();
+        }
+        else {
+            Alert.alert("Email Not found", "The user's email you passed to join the room isn't found. Maybe this user is not signed up to our app")
+        }
 
         // firebase.firestore().collection('users').get().then(docs => {
         //     docs.forEach(doc => {

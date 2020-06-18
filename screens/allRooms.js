@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import RoomView from '../components/roomView';
-import { deleteRoomUsers, deleteRoomColl } from '../components/data'
+import { deleteRoomUsers, deleteRoomColl, deleteAllImages, deleteRoomFromCollection } from '../components/data'
 import firebase from 'firebase';
 import 'firebase/firestore'
 
@@ -37,7 +37,9 @@ export default class AllRooms extends React.Component {
     deleteRoom = (roomName) => {
         const sure = () => {
             deleteRoomColl(roomName);
+            deleteRoomFromCollection(roomName);
             deleteRoomUsers(roomName);
+            deleteAllImages(roomName);
         }
 
         Alert.alert("Delete?", "Are you sure you want to delete this room?", [
@@ -46,22 +48,22 @@ export default class AllRooms extends React.Component {
         ])
     }
 
-    UNSAFE_componentWillMount() {
-        const firebaseConfig = {
-            apiKey: "AIzaSyDlTYCFtvZ-bohe7kjzbOLSryMshurBeEg",
-            authDomain: "todo-list-68c0e.firebaseapp.com",
-            databaseURL: "https://todo-list-68c0e.firebaseio.com",
-            projectId: "todo-list-68c0e",
-            storageBucket: "todo-list-68c0e.appspot.com",
-            messagingSenderId: "306762454858",
-            appId: "1:306762454858:web:dd676a64dd511e758993b3",
-            measurementId: "G-8CYW4DPGK8"
-        };
+    // UNSAFE_componentWillMount() {
+    //     const firebaseConfig = {
+    //         apiKey: "AIzaSyDlTYCFtvZ-bohe7kjzbOLSryMshurBeEg",
+    //         authDomain: "todo-list-68c0e.firebaseapp.com",
+    //         databaseURL: "https://todo-list-68c0e.firebaseio.com",
+    //         projectId: "todo-list-68c0e",
+    //         storageBucket: "todo-list-68c0e.appspot.com",
+    //         messagingSenderId: "306762454858",
+    //         appId: "1:306762454858:web:dd676a64dd511e758993b3",
+    //         measurementId: "G-8CYW4DPGK8"
+    //     };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-    }
+    //     if (!firebase.apps.length) {
+    //         firebase.initializeApp(firebaseConfig);
+    //     }
+    // }
 
     componentDidMount() {
         const userRooms = () => {
