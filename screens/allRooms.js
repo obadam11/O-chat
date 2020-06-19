@@ -28,7 +28,7 @@ export default class AllRooms extends React.Component {
             return (
                 <View style={styles.noRooms}>
                     <Text style={styles.noRoomsTxt}>You have no rooms 😢</Text>
-                    <Text style={styles.noRoomsTxt2}>To add rooms click the add button at the bottom right</Text>
+                    <Text style={styles.noRoomsTxt2}>click the "+" button at the bottom right to create a room</Text>
                 </View>
             )
         }
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     },
     noRoomsTxt2: {
         color: 'grey',
-        fontSize: 16
+        fontSize: 13
     },
     noRooms: {
         height: '100%',

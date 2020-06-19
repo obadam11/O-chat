@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, TextInput, Button } from 'react-native';
+import { View } from 'react-native';
 import Profile from '../screens/profile';
+import Loading from '../screens/Loading';
 
 export default class PassingProps extends Component {
     constructor(props) {
@@ -9,7 +10,10 @@ export default class PassingProps extends Component {
 
     render() {
         return (
-            <Profile navigation={this.props.naviagtion} />
+            <View>
+                <Profile navigation={this.props.naviagtion} />
+                <Loading naviagtion={this.props.naviagtion} />
+            </View>
         )
     }
 }

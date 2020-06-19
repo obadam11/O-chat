@@ -34,21 +34,22 @@ export default function RoomNameText({ navigation, text, email }) {
             addRoomToUsers(email, text);
             navigation.navigate("AllRooms");
         }
+        creatingRoom();
 
-        emailExsists(email, () => {
-            setEmailAvailbale(true)
-            console.log(true);
-        }, () => {
-            setEmailAvailbale(false);
-            console.log(false);
-        })
+        // emailExsists(email, () => {
+        //     setEmailAvailbale(true)
+        //     console.log(true);
+        // }, () => {
+        //     setEmailAvailbale(false);
+        //     console.log(false);
+        // })
 
-        if (emailAvailbale) {
-            creatingRoom();
-        }
-        else {
-            Alert.alert("Email Not found", "The user's email you passed to join the room isn't found. Maybe this user is not signed up to our app")
-        }
+        // if (emailAvailbale) {
+        //     creatingRoom();
+        // }
+        // else {
+        //     Alert.alert("Email Not found", "The user's email you passed to join the room isn't found. Maybe this user is not signed up to our app")
+        // }
 
         // firebase.firestore().collection('users').get().then(docs => {
         //     docs.forEach(doc => {

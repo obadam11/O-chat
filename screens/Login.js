@@ -272,9 +272,6 @@ const styles = StyleSheet.create({
         width: 250,
         marginTop: 30,
     },
-    // login: {
-    //     marginBottom: 20
-    // },
     signUpBtn: {
         marginBottom: 20
     },
@@ -286,7 +283,7 @@ const styles = StyleSheet.create({
         color: 'black',
         textAlign: 'center',
         marginTop: 10,
-        fontStyle: "italic",
+        fontWeight: "bold",
         fontFamily: "sans-serif-light"
     },
     loginContainer: {

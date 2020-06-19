@@ -5,6 +5,7 @@ import Login from './screens/Login';
 import roomScreen from './screens/roomScreen';
 import AllRooms from './screens/allRooms';
 import Profile from './screens/profile';
+import Loading from './screens/Loading';
 
 import React from 'react';
 import { View } from 'react-native';
@@ -12,6 +13,9 @@ import { View } from 'react-native';
 
 
 const screens = {
+    Loading: {
+        screen: Loading
+    },
     Login: {
         screen: Login,
         navigationOptions: {
