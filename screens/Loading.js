@@ -10,7 +10,8 @@ export default function Loading({ navigation }) {
         //     navigation.navigate("Login")
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                navigation.navigate("Login")
+                //navigation.navigate("Login");
+                navigation.replace("Login");
             }
             else {
 

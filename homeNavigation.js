@@ -15,6 +15,9 @@ import { View } from 'react-native';
 const screens = {
     Loading: {
         screen: Loading
+        // navigationOptions: {
+        //     swipeEnabled: false
+        // }
     },
     Login: {
         screen: Login,

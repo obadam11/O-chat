@@ -257,10 +257,8 @@ export const uplaodProfileImg = async () => {
 }
 
 // get the user email
-export const getUserEmailFromDB = (callBack) => {
-    firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
-        callBack(doc.id);
-    })
+export const getUserEmailFromDB = async () => {
+    return await firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get()
 }
 
 // Delete account

@@ -38,9 +38,12 @@ export default class Login extends React.Component {
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
             this.setState({ user: user });
-            this.props.navigation.navigate(user ? "AllRooms" : "Login")
+            // BEWARE of this
+            // this.props.navigation.navigate(user ? "AllRooms" : "Login")
             if (user) {
-                this.props.navigation.navigate("AllRooms")
+                // BEWARE OF THIS
+                // this.props.navigation.navigate("AllRooms")
+                this.props.navigation.replace('AllRooms');
                 this.setState({ savedEmail: `Logged in as ${user.email}` });
             }
             else {

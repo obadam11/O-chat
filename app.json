@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "chat-app3",
+    "name": "O chat",
     "slug": "chat-app3",
     "platforms": [
       "ios",
@@ -9,9 +9,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/img/logo.png",
     "splash": {
-      "image": "./assets/img/logo.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

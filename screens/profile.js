@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
-import { getUserNameFromDB, userImage, uplaodProfileImg, deleteAccount, logOut, changeUserName } from '../components/data';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { getUserEmailFromDB, userImage, uplaodProfileImg, deleteAccount, logOut, changeUserName } from '../components/data';
 
 export default function Profile({ navigation }) {
 
     const [src, setSrc] = useState(require('../assets/img/profile.png'));
-    const [userName, setUserName] = useState('');
-    const [oldUserName, setoldUserName] = useState('');
+    // const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
 
     const imgSource = () => {
         // The (UserImage) will display the user's profile image
@@ -18,26 +18,32 @@ export default function Profile({ navigation }) {
             }
         })
     }
-    const getuserName = () => {
-        // The (getUserNameFromDB) will get the username of the user
-        getUserNameFromDB(username => {
-            setUserName(username);
-        })
+    const getEmail = () => {
+        getUserEmailFromDB()
+            .then(doc => {
+                setEmail(doc.id);
+            })
     }
-    const getOldUserName = () => {
-        getUserNameFromDB(username => {
-            setoldUserName(username);
-        })
-    }
+    // const getuserName = () => {
+    //     // The (getUserNameFromDB) will get the username of the user
+    //     getUserNameFromDB(username => {
+    //         setUserName(username);
+    //     })
+    // }
+    // const getOldUserName = () => {
+    //     getUserNameFromDB(username => {
+    //         setoldUserName(username);
+    //     })
+    // }
     const changeProfileImageHandler = () => {
         // The (uplaodProfileImg) will update the profile image
         uplaodProfileImg();
     }
 
     useEffect(() => {
-        getuserName();
+        // getuserName();
         imgSource();
-        getOldUserName();
+        getEmail();
     }, []);
 
     // useEffect(() => {
@@ -49,6 +55,11 @@ export default function Profile({ navigation }) {
             <TouchableOpacity onPress={changeProfileImageHandler}>
                 <Image source={src} style={styles.img} />
             </TouchableOpacity>
+
+            <View style={styles.emailMaster}>
+                <Text style={styles.email}>{email}</Text>
+            </View>
+
             <View style={styles.btns}>
 
                 <TouchableOpacity style={styles.logOut} onPress={() => logOut(() => { navigation.navigate("Login") })}>
@@ -58,6 +69,7 @@ export default function Profile({ navigation }) {
                     <Text style={styles.logOutTxt}>Delete Account</Text>
                 </TouchableOpacity>
             </View>
+
 
         </View>
     )
@@ -103,6 +115,13 @@ const styles = StyleSheet.create({
     logOutTxt: {
         fontSize: 18,
         color: '#f0f0f0',
+        fontWeight: 'bold'
+    },
+    emailMaster: {
+        marginTop: 15
+    },
+    email: {
+        fontSize: 25,
         fontWeight: 'bold'
     }
 });
