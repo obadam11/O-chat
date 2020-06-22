@@ -1,13 +1,13 @@
-<center>O chat</center>
-
-**React Native**
-**Firebase**
-**Expo**
+<h1 align="center">O chat </h1> <br /><br />
+  
+**React Native** <br />
+**Firebase** <br />
+**Expo** <br />
 
 It is a chat application made by React Native (frontend)
 and Firebase as my (backend) manged by Expo. <br />
 
-<center>How to clone</center>
+<h1 align="center">How to clone</h1>
 
 * `npm install @react-navigation/native` or using yarn `yarn add @react-navigation/native` refrence [react navigation](https://reactnavigation.org/docs/getting-started/) <br/>
 
@@ -22,5 +22,5 @@ and Firebase as my (backend) manged by Expo. <br />
 * `npm install firebase --save` this is for the backend
 <br />
 
-<center> Note </center>
+<h1 align="center">Note</h1> <br />
 You should create a file and name it firebaseKey.js and put your firebase key there
