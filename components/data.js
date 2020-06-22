@@ -5,6 +5,11 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import FirebaseKey from '../firebaseKey';
 
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import { Notifications } from 'expo';
+
+
 // To avoid a common warning
 // import { YellowBox, Alert } from 'react-native';
 // import _ from 'lodash';
@@ -289,5 +294,97 @@ export function emailExsists(email, callBack, callBack2) {
                 callBack2();
             }
         })
+    })
+}
+
+export const notifications = async () => {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+    }
+    token = await Notifications.getExpoPushTokenAsync();
+    console.log(token);
+
+    if (Platform.OS === 'android') {
+        Notifications.createChannelAndroidAsync('chat-message', {
+            name: 'Chat message',
+            sound: true,
+            priority: 'max',
+            vibrate: [0, 250, 250, 250],
+        });
+    }
+    saveNotificationToken(token);
+}
+
+export const sendNotification = (msg, roomName) => {
+
+    const currentUser = firebase.auth().currentUser.email;
+    firebase.firestore().collection(roomName).doc('fstmsg').get()
+        .then(doc => {
+            if (doc.data().user1Email == currentUser) {
+                firebase.firestore().collection('users').doc(doc.data().user2email).get().then(doc => {
+                    const notificationToken = doc.data().notificationToken;
+
+                    let response = fetch('https://exp.host/--/api/v2/push/send', {
+                        method: "POST",
+                        headers: {
+                            Accept: "application/json",
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: notificationToken,
+                            sound: "default",
+                            title: roomName,
+                            body: msg,
+                        })
+                    })
+                })
+            }
+            else {
+                firebase.firestore().collection('users').doc(doc.data().user1Email).get().then(doc => {
+                    const notificationToken = doc.data().notificationToken;
+
+                    let response = fetch('https://exp.host/--/api/v2/push/send', {
+                        method: "POST",
+                        headers: {
+                            Accept: "application/json",
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: notificationToken,
+                            sound: "default",
+                            title: roomName,
+                            body: msg
+                        })
+                    })
+                })
+            }
+        })
+
+    // let response = fetch('https://exp.host/--/api/v2/push/send', {
+    //     method: "POST",
+    //     headers: {
+    //         Accept: "application/json",
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //         to: to,
+    //         sound: "default",
+    //         title: roomName,
+    //         body: msg
+    //     })
+    // })
+}
+
+async function saveNotificationToken(token) {
+    const userEmail = firebase.auth().currentUser.email;
+    await firebase.firestore().collection("users").doc(userEmail).update({
+        notificationToken: token
     })
 }

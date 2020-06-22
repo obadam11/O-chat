@@ -12,6 +12,7 @@
     "base-64": "^0.1.0",
     "expo": "~37.0.3",
     "expo-image-picker": "~8.1.0",
+    "expo-permissions": "~8.1.0",
     "firebase": "^7.14.6",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

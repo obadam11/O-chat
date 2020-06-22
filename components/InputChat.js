@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, TextInput, Vibration } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { sendMessageForDataBase } from './data';
+import { sendMessageForDataBase, sendNotification } from './data';
 import AddImage from '../components/AddImage';
 
 export default class InputChat extends React.Component {
@@ -19,7 +19,8 @@ export default class InputChat extends React.Component {
         if (this.state.msg.trim().length > 0) {
             sendMessageForDataBase(this.getRoomName(), this.state.msg,);
             this.setState({ msg: '' })
-            Vibration.vibrate();
+            // Vibration.vibrate();
+            sendNotification(this.state.msg, this.getRoomName());
         }
     }
 

@@ -1,10 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View, Text, Alert } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Text, Alert, Vibration } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import RoomView from '../components/roomView';
-import { deleteRoomUsers, deleteRoomColl, deleteAllImages, deleteRoomFromCollection } from '../components/data'
+import { deleteRoomUsers, deleteRoomColl, deleteAllImages, deleteRoomFromCollection, notifications } from '../components/data';
 import firebase from 'firebase';
-import 'firebase/firestore'
+import 'firebase/firestore';
+import { Notifications } from 'expo';
+
+
+
 
 export default class AllRooms extends React.Component {
     constructor(props) {
@@ -77,8 +81,14 @@ export default class AllRooms extends React.Component {
             // }
         }
         userRooms();
-    }
+        notifications();
+        Notifications.addListener(this.handleNotification)
+    };
 
+    handleNotification = (notification) => {
+        // Vibration.vibrate();
+        console.log(notification);
+    }
 
     renderingRooms() {
         if (this.state.rooms.length > 0) {
