@@ -10,10 +10,7 @@ console.disableYellowBox = true
 export default function App() {
   return (
     <React.Fragment>
-      {/* <Login /> */}
-      {/* <Chat /> */}
       <Navigator />
-      {/* <AllRooms /> */}
     </React.Fragment>
   );
 }

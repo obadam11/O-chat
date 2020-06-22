@@ -312,8 +312,8 @@ export const notifications = async () => {
     console.log(token);
 
     if (Platform.OS === 'android') {
-        Notifications.createChannelAndroidAsync('chat-message', {
-            name: 'Chat message',
+        Notifications.createChannelAndroidAsync('default', {
+            name: 'default',
             sound: true,
             priority: 'max',
             vibrate: [0, 250, 250, 250],
