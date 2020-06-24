@@ -31,7 +31,9 @@ export default class Message extends React.Component {
 
     getUserImage = (userEmail) => {
         firebase.firestore().collection('users').doc(userEmail).get().then(doc => {
-            this.setState({ profileImg: { uri: doc.data().img } })
+            if (doc.data().img != 'none') {
+                this.setState({ profileImg: { uri: doc.data().img } })
+            }
         })
             .catch(err => console.log(err));
     }
@@ -49,12 +51,17 @@ export default class Message extends React.Component {
             .catch(err => console.log(err));
     }
 
-    getMyProfileImg = () => {
-        firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
-            this.setState({ myProfileImg: { uri: doc.data().img } })
-        })
-            .catch(err => console.log(err));
-    }
+    // THIS IS A WORKING FEATURE
+
+    // getMyProfileImg = () => {
+    //     firebase.firestore().collection('users').doc(firebase.auth().currentUser.email).get().then(doc => {
+    //         console.log(doc.data().img)
+    //         if (doc.data().img != 'none') {
+    //             this.setState({ myProfileImg: { uri: doc.data().img } })
+    //         }
+    //     })
+    //         .catch(err => console.log(err));
+    // }
 
     deleteMsg = () => {
         const del = () => {
@@ -87,7 +94,7 @@ export default class Message extends React.Component {
                             </View>
                         </View>
                     </TouchableOpacity>
-                    <Image source={this.state.myProfileImg} style={styles.profileImg2} />
+                    {/* <Image source={this.state.myProfileImg} style={styles.profileImg2} /> */}
                 </View>
             )
         }
@@ -125,7 +132,7 @@ export default class Message extends React.Component {
     componentDidMount() {
         this.changeState();
         this.getFriendProfileImg();
-        this.getMyProfileImg();
+        // this.getMyProfileImg();
 
     }
 
