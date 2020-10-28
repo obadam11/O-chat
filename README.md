@@ -26,9 +26,6 @@ and Firebase as my (backend) manged by Expo. <br />
 
 <center> Note </center>
 You should create a file and name it firebaseKey.js and put your firebase key there
-=======
-=======
->>>>>>> c564f6dbb9e1a92f86966be62c3943834ed13190
 <h1 align="center">O chat </h1> <br /><br />
   
 **React Native** <br />
